@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  allure-testops-mcp:
+    build: .
+    container_name: allure-testops-mcp
+    environment:
+      - ALLURE_TESTOPS_URL=${ALLURE_TESTOPS_URL:-https://allure-testops.labs.jb.gg}
+      - ALLURE_TOKEN=${ALLURE_TOKEN}
+      - PROJECT_ID=${PROJECT_ID}
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
