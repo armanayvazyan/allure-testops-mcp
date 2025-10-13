@@ -28,7 +28,7 @@ npm install
 Create a `.env` file in the project root:
 
 ```bash
-ALLURE_TESTOPS_URL=https://allure-testops.labs.jb.gg
+ALLURE_TESTOPS_URL=https://allure-testops.test.com
 ALLURE_TOKEN=your-api-token-here
 PROJECT_ID=1
 ```

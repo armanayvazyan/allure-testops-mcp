@@ -10,7 +10,7 @@ import { AllureClient } from './allure-client.js';
 import { parseTestCasesFromCSV } from './csv-parser.js';
 
 // Get configuration from environment variables
-const ALLURE_TESTOPS_URL = process.env.ALLURE_TESTOPS_URL || 'https://allure-testops.labs.jb.gg';
+const ALLURE_TESTOPS_URL = process.env.ALLURE_TESTOPS_URL || 'https://allure-testops.test.com';
 const ALLURE_TOKEN = process.env.ALLURE_TOKEN;
 const PROJECT_ID = process.env.PROJECT_ID;
 
@@ -44,11 +44,9 @@ const server = new Server(
   }
 );
 
-// List available tools
 server.setRequestHandler(ListToolsRequestSchema, async () => {
   return {
     tools: [
-      // Test Case tools
       {
         name: 'list_test_cases',
         description: 'List all test cases in the project',
@@ -122,7 +120,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['csv_content'],
         },
       },
-      // Launch tools
       {
         name: 'list_launches',
         description: 'List all launches in the project',
@@ -192,7 +189,6 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           required: ['id'],
         },
       },
-      // Test Plan tools
       {
         name: 'list_test_plans',
         description: 'List all test plans in the project',
@@ -255,13 +251,11 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
   };
 });
 
-// Handle tool calls
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
   try {
     const { name, arguments: args } = request.params;
 
     switch (name) {
-      // Test Case operations
       case 'list_test_cases': {
         const result = await allureClient.getTestCases(args || {});
         return {
@@ -306,7 +300,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      // Launch operations
       case 'list_launches': {
         const result = await allureClient.getLaunches(args || {});
         return {
@@ -350,7 +343,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         };
       }
 
-      // Test Plan operations
       case 'list_test_plans': {
         const result = await allureClient.getTestPlans(args || {});
         return {
@@ -403,7 +395,6 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
   }
 });
 
-// Start the server
 async function main() {
   const transport = new StdioServerTransport();
   await server.connect(transport);
