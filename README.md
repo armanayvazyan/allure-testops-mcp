@@ -107,7 +107,33 @@ Test Case 2,Description for test case 2,ready,false
 
 ## MCP Client Configuration
 
+### Using Docker (Recommended)
+
 Add to your MCP client configuration (e.g., Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "allure-testops": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "ALLURE_TESTOPS_URL=https://your-allure-instance.com",
+        "-e",
+        "ALLURE_TOKEN=your-api-token",
+        "-e",
+        "PROJECT_ID=1",
+        "YOUR_DOCKERHUB_USERNAME/allure-testops-mcp:latest"
+      ]
+    }
+  }
+}
+```
+
+### Using Node.js (Local Development)
 
 ```json
 {
