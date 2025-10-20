@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration - UPDATE THESE VALUES
-DOCKERHUB_USERNAME="${DOCKERHUB_USERNAME:-yourusername}"
+DOCKERHUB_USERNAME="armanayvazyan"
 IMAGE_NAME="allure-testops-mcp"
 VERSION="${VERSION:-1.0.0}"
 
