@@ -10,7 +10,7 @@ import { AllureClient } from './allure-client.js';
 import { parseTestCasesFromCSV } from './csv-parser.js';
 
 // Get configuration from environment variables
-const ALLURE_TESTOPS_URL = process.env.ALLURE_TESTOPS_URL || 'https://allure-testops.test.com';
+const ALLURE_TESTOPS_URL = process.env.ALLURE_TESTOPS_URL;
 const ALLURE_TOKEN = process.env.ALLURE_TOKEN;
 const PROJECT_ID = process.env.PROJECT_ID;
 
@@ -19,19 +19,22 @@ if (!ALLURE_TOKEN) {
   process.exit(1);
 }
 
+if (!ALLURE_TESTOPS_URL) {
+  console.error('Error: ALLURE_TESTOPS_URL environment variable is required');
+  process.exit(1);
+}
+
 if (!PROJECT_ID) {
   console.error('Error: PROJECT_ID environment variable is required');
   process.exit(1);
 }
 
-// Initialize Allure client
 const allureClient = new AllureClient({
   baseUrl: ALLURE_TESTOPS_URL,
   token: ALLURE_TOKEN,
   projectId: PROJECT_ID,
 });
 
-// Create MCP server
 const server = new Server(
   {
     name: 'allure-testops-mcp',
@@ -118,6 +121,39 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
             csv_content: { type: 'string', description: 'CSV file content' },
           },
           required: ['csv_content'],
+        },
+      },
+      {
+        name: 'search_test_cases_by_aql',
+        description: `Search test cases using Allure Query Language (AQL). AQL supports filtering by fields like name, tag, status, etc.
+
+Examples:
+- Find test cases by name: name = "My Test"
+- Partial match: name ~= "test"
+- Multiple conditions: name ~= "test" and createdBy = "John"
+- Find by tag: tag = "smoke"
+- Not equal: status != "passed"
+- Numeric comparison: id >= 100
+- Boolean field: automated = true
+- Multiple values: name in ["Test 1", "Test 2"]
+- Date range: createdDate > 1672531200000 and createdDate < 1704067200000
+- Check null: role["Owner"] = null
+- Negation: not name ~= "test"
+- Complex query: (tag = "smoke" or tag = "regression") and status = "passed"
+
+Supported operators: =, !=, ~=, >, <, >=, <=, and, or, not, in
+Common fields: id, name, tag, issue, status, automation, createdDate, createdBy`,
+        inputSchema: {
+          type: 'object',
+          properties: {
+            aql: {
+              type: 'string',
+              description: 'AQL query string. See tool description for examples and syntax.'
+            },
+            page: { type: 'number', description: 'Page number (optional)' },
+            size: { type: 'number', description: 'Page size (optional)' },
+          },
+          required: ['aql'],
         },
       },
       {
@@ -297,6 +333,14 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
         const results = await allureClient.bulkCreateTestCases(testCases);
         return {
           content: [{ type: 'text', text: JSON.stringify(results, null, 2) }],
+        };
+      }
+
+      case 'search_test_cases_by_aql': {
+        const { aql, ...otherParams } = args as any;
+        const result = await allureClient.searchTestCasesByAQL(aql, otherParams);
+        return {
+          content: [{ type: 'text', text: JSON.stringify(result, null, 2) }],
         };
       }
 

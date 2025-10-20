@@ -1,5 +1,5 @@
 import { parse } from 'csv-parse/sync';
-import { TestCase } from './allure-client.js';
+import { TestCase } from './controllers/test-case-controller.js';
 
 export interface CSVTestCase {
   name: string;
