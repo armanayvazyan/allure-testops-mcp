@@ -49,6 +49,18 @@ import { CustomFieldProjectController } from './controllers/custom-field-project
 import { CustomFieldSchemaController } from './controllers/custom-field-schema-controller.js';
 import { CustomFieldValueBulkController } from './controllers/custom-field-value-bulk-controller.js';
 import { TestCaseBulkControllerV2 } from './controllers/test-case-bulk-controller-v2.js';
+import { AccessGroupController } from './controllers/access-group-controller.js';
+import { AnalyticsController } from './controllers/analytics-controller.js';
+import { DefectController } from './controllers/defect-controller.js';
+import { IntegrationController } from './controllers/integration-controller.js';
+import { EnvironmentController, EnvironmentVariableController } from './controllers/environment-controller.js';
+import { BusinessMetricController } from './controllers/business-metric-controller.js';
+import { GlobalSettingsController } from './controllers/global-settings-controller.js';
+import { CommentController } from './controllers/comment-controller.js';
+import { CategoryMatcherController } from './controllers/category-matcher-controller.js';
+import { ExportController } from './controllers/export-controller.js';
+import { ImportController } from './controllers/import-controller.js';
+import { CleanupController } from './controllers/cleanup-controller.js';
 
 export interface AllureConfig {
   baseUrl: string;
@@ -109,6 +121,19 @@ export class AllureClient {
   public readonly customFieldSchema: CustomFieldSchemaController;
   public readonly customFieldValueBulk: CustomFieldValueBulkController;
   public readonly testCaseBulkV2: TestCaseBulkControllerV2;
+  public readonly accessGroup: AccessGroupController;
+  public readonly analytics: AnalyticsController;
+  public readonly defect: DefectController;
+  public readonly integration: IntegrationController;
+  public readonly environment: EnvironmentController;
+  public readonly environmentVariable: EnvironmentVariableController;
+  public readonly businessMetric: BusinessMetricController;
+  public readonly globalSettings: GlobalSettingsController;
+  public readonly comment: CommentController;
+  public readonly categoryMatcher: CategoryMatcherController;
+  public readonly export: ExportController;
+  public readonly import: ImportController;
+  public readonly cleanup: CleanupController;
 
   constructor(config: AllureConfig) {
     this.projectId = config.projectId;
@@ -169,6 +194,19 @@ export class AllureClient {
     this.customFieldSchema = new CustomFieldSchemaController(this.client);
     this.customFieldValueBulk = new CustomFieldValueBulkController(this.client);
     this.testCaseBulkV2 = new TestCaseBulkControllerV2(this.client);
+    this.accessGroup = new AccessGroupController(this.client);
+    this.analytics = new AnalyticsController(this.client, this.projectId);
+    this.defect = new DefectController(this.client, this.projectId);
+    this.integration = new IntegrationController(this.client, this.projectId);
+    this.environment = new EnvironmentController(this.client, this.projectId);
+    this.environmentVariable = new EnvironmentVariableController(this.client, this.projectId);
+    this.businessMetric = new BusinessMetricController(this.client, this.projectId);
+    this.globalSettings = new GlobalSettingsController(this.client);
+    this.comment = new CommentController(this.client);
+    this.categoryMatcher = new CategoryMatcherController(this.client, this.projectId);
+    this.export = new ExportController(this.client, this.projectId);
+    this.import = new ImportController(this.client, this.projectId);
+    this.cleanup = new CleanupController(this.client, this.projectId);
   }
 
   // Backward compatibility methods - delegates to controllers
