@@ -1,36 +1,134 @@
-import { AxiosInstance } from 'axios';
+/**
+ * CategoryMatcherController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export interface CategoryMatcher {
-  id?: number;
-  name: string;
-  pattern: string;
-  categoryId: number;
-}
+import { AllureClient } from '../allure-client.js';
 
-export class CategoryMatcherController {
-  constructor(private client: AxiosInstance, private projectId: string) {}
+export const categoryMatcherControllerTools = [
+    {
+      "name": "allure_findAll_47",
+      "description": "GET /api/categorymatcher",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "page": {
+            "type": "number",
+            "description": "Zero-based page index (0..N)"
+          },
+          "size": {
+            "type": "number",
+            "description": "The size of the page to be returned"
+          },
+          "sort": {
+            "type": "array",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "items": {
+              "type": "string"
+            }
+          },
+          "excludedProjectId": {
+            "type": "number",
+            "description": "excludedProjectId"
+          }
+        },
+        "required": [
+          "excludedProjectId"
+        ]
+      }
+    },
+    {
+      "name": "allure_create_54",
+      "description": "POST /api/categorymatcher",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "allure_deleteById_6",
+      "description": "DELETE /api/categorymatcher/{id}",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Path parameter: id"
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "allure_patch_50",
+      "description": "PATCH /api/categorymatcher/{id}",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Path parameter: id"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "id",
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async getAll(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/categorymatcher`, { params: { ...params, projectId: this.projectId } });
-    return response.data;
-  }
+export async function handleCategoryMatcherControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_findAll_47': {
+        const { page, size, sort, excludedProjectId } = args;
+        const queryParams = { page, size, sort, excludedProjectId };
+        const result = await client.get(`/api/categorymatcher`, queryParams);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async get(id: number): Promise<any> {
-    const response = await this.client.get(`/api/rs/categorymatcher/${id}`);
-    return response.data;
-  }
+      case 'allure_create_54': {
+        const { body } = args;
+        const result = await client.post(`/api/categorymatcher`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async create(matcher: CategoryMatcher): Promise<any> {
-    const response = await this.client.post(`/api/rs/categorymatcher`, { ...matcher, projectId: this.projectId });
-    return response.data;
-  }
+      case 'allure_deleteById_6': {
+        const { id } = args;
+        await client.delete(`/api/categorymatcher/${args.id}`);
+        return 'Successfully deleted';
+      }
 
-  async update(id: number, matcher: Partial<CategoryMatcher>): Promise<any> {
-    const response = await this.client.patch(`/api/rs/categorymatcher/${id}`, matcher);
-    return response.data;
-  }
+      case 'allure_patch_50': {
+        const { id, body } = args;
+        const result = await client.patch(`/api/categorymatcher/${args.id}`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async delete(id: number): Promise<void> {
-    await this.client.delete(`/api/rs/categorymatcher/${id}`);
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`CategoryMatcherController operation failed: ${error.message}`);
   }
 }

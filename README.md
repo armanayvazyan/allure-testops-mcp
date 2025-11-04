@@ -1,43 +1,37 @@
 # Allure TestOps MCP Server
 
-MCP (Model Context Protocol) server for Allure TestOps REST API integration. Provides CRUD operations for test cases, launches, and test plans, including bulk CSV import and AQL-based search capabilities.
+Model Context Protocol (MCP) server for Allure TestOps REST API. Provides comprehensive tooling for test case management, custom fields, and advanced search capabilities.
 
 ## Features
 
-- **Test Cases CRUD**: Create, read, update, delete test cases
-- **AQL Search**: Search test cases using Allure Query Language with powerful filtering
-- **Bulk CSV Import**: Import multiple test cases from CSV files
-- **Launches CRUD**: Manage test launches
-- **Test Plans CRUD**: Manage test plans
-- **Docker Support**: Run as a containerized service
+- **Test Case Management**: Full CRUD operations for test cases
+- **Custom Fields**: Create and manage custom fields with options
+- **Advanced Search**: Complex filtering and saved filters
+- **Extensible Architecture**: Easy to add new controllers
+- **TypeScript Support**: Fully typed implementation
+- **Docker Support**: Can be run as a containerized service
 
 ## Prerequisites
 
 - Node.js 20+
 - Allure TestOps instance with API access
-- API token with appropriate permissions
+- API token for authentication
 
 ## Installation
 
 ```bash
-cd allure-testops-mcp
 npm install
 ```
 
-## Configuration
+## Environment Variables
 
-Create a `.env` file in the project root:
+Set the following environment variables:
 
 ```bash
-ALLURE_TESTOPS_URL=https://allure-testops.test.com
-ALLURE_TOKEN=your-api-token-here
-PROJECT_ID=1
+export ALLURE_TESTOPS_URL="https://your-allure-instance.com"
+export ALLURE_TOKEN="your-api-token"
+export PROJECT_ID="your-project-id"
 ```
-
-Get your API token from Allure TestOps:
-1. Log into Allure TestOps
-2. Go to Profile → API tokens
-3. Generate a new token
 
 ## Usage
 
@@ -54,107 +48,64 @@ npm run build
 npm start
 ```
 
-### Docker
+## Available Tools (25 total)
 
-Build the image:
-```bash
-npm run build
-docker build -t allure-testops-mcp .
-```
+### Test Case Tools (5)
+- `allure_list_test_cases` - List test cases with pagination and filtering
+- `allure_get_test_case` - Get specific test case by ID
+- `allure_create_test_case` - Create new test cases
+- `allure_update_test_case` - Update existing test cases
+- `allure_delete_test_case` - Delete test cases
 
-Run the container:
-```bash
-docker run -e ALLURE_TESTOPS_URL=https://your-instance.com \
-           -e ALLURE_TOKEN=your-token \
-           -e PROJECT_ID=1 \
-           allure-testops-mcp
-```
+### Custom Field Tools (9)
+- `allure_list_custom_fields` - List custom fields with filtering
+- `allure_get_custom_field` - Get specific custom field
+- `allure_create_custom_field` - Create new custom fields
+- `allure_update_custom_field` - Update custom fields
+- `allure_delete_custom_field` - Delete custom fields
+- `allure_archive_custom_field` - Archive/restore fields
+- `allure_suggest_custom_field_values` - Get value suggestions
+- `allure_count_custom_field_usage` - Count field usage
+- `allure_merge_custom_fields` - Merge multiple fields
 
-## Available Tools
+### Test Case Custom Field Tools (3)
+- `allure_get_test_case_custom_fields` - Get all custom field values for a test case
+- `allure_add_custom_fields_to_test_case` - Add custom fields to a test case
+- `allure_update_test_case_custom_field` - Update custom field value on a test case
 
-### Test Cases
-
-- `list_test_cases` - List all test cases in the project
-- `get_test_case` - Get a specific test case by ID
-- `create_test_case` - Create a new test case
-- `update_test_case` - Update an existing test case
-- `delete_test_case` - Delete a test case
-- `search_test_cases_by_aql` - Search test cases using Allure Query Language
-- `bulk_create_test_cases_from_csv` - Bulk import test cases from CSV
-
-#### CSV Format for Bulk Import
-
-```csv
-name,description,status,automated
-Test Case 1,Description for test case 1,draft,true
-Test Case 2,Description for test case 2,ready,false
-```
-
-#### AQL Search Examples
-
-Search test cases using Allure Query Language (AQL) for powerful filtering:
-
-**Basic queries:**
-```
-name = "My Test"                          # Exact match
-name ~= "test"                            # Partial match
-tag = "smoke"                             # Filter by tag
-```
-
-**Multiple conditions:**
-```
-name ~= "test" and createdBy = "John"     # Combined with AND
-tag = "smoke" or tag = "regression"       # Combined with OR
-```
-
-**Comparisons:**
-```
-id >= 100                                 # Numeric comparison
-status != "passed"                        # Not equal
-automated = true                          # Boolean field
-```
-
-**Advanced queries:**
-```
-name in ["Test 1", "Test 2"]              # Multiple values
-role["Owner"] = null                      # Check null values
-not name ~= "test"                        # Negation
-createdDate > 1672531200000               # Date filtering (milliseconds)
-```
-
-**Complex query:**
-```
-(tag = "smoke" or tag = "regression") and status = "passed"
-```
-
-**Supported operators:** `=`, `!=`, `~=`, `>`, `<`, `>=`, `<=`, `and`, `or`, `not`, `in`
-
-**Common fields:** `id`, `name`, `tag`, `issue`, `status`, `automation`, `createdDate`, `createdBy`
-
-For more details, see the [official AQL documentation](https://docs.qameta.io/allure-testops/advanced/aql/).
-
-### Launches
-
-- `list_launches` - List all launches in the project
-- `get_launch` - Get a specific launch by ID
-- `create_launch` - Create a new launch
-- `update_launch` - Update an existing launch
-- `delete_launch` - Delete a launch
-- `close_launch` - Close a launch
-
-### Test Plans
-
-- `list_test_plans` - List all test plans in the project
-- `get_test_plan` - Get a specific test plan by ID
-- `create_test_plan` - Create a new test plan
-- `update_test_plan` - Update an existing test plan
-- `delete_test_plan` - Delete a test plan
+### Search & Filter Tools (8)
+- `allure_search_test_cases` - Advanced search with complex filtering
+- `allure_list_filters` - List saved filters
+- `allure_get_filter` - Get specific filter
+- `allure_create_filter` - Create saved filters
+- `allure_update_filter` - Update filters
+- `allure_delete_filter` - Delete filters
+- `allure_get_base_filter` - Get default filter
+- `allure_set_base_filter` - Set default filter
 
 ## MCP Client Configuration
 
-### Using Docker (Recommended)
+### Using Node.js (Local Development)
 
 Add to your MCP client configuration (e.g., Claude Desktop):
+
+```json
+{
+  "mcpServers": {
+    "allure-testops": {
+      "command": "node",
+      "args": ["/path/to/allure-testops-mcp/dist/index.js"],
+      "env": {
+        "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
+        "ALLURE_TOKEN": "your-api-token",
+        "PROJECT_ID": "your-project-id"
+      }
+    }
+  }
+}
+```
+
+### Using Docker
 
 ```json
 {
@@ -165,123 +116,154 @@ Add to your MCP client configuration (e.g., Claude Desktop):
         "run",
         "-i",
         "--rm",
-        "-e",
-        "ALLURE_TESTOPS_URL=https://your-allure-instance.com",
-        "-e",
-        "ALLURE_TOKEN=your-api-token",
-        "-e",
-        "PROJECT_ID=1",
-        "armanayvazyan/allure-testops-mcp:latest"
+        "-e", "ALLURE_TESTOPS_URL=https://your-allure-instance.com",
+        "-e", "ALLURE_TOKEN=your-api-token",
+        "-e", "PROJECT_ID=your-project-id",
+        "allure-testops-mcp"
       ]
     }
   }
 }
 ```
 
-### Using Node.js (Local Development)
+## Project Structure
 
-```json
-{
-  "mcpServers": {
-    "allure-testops": {
-      "command": "node",
-      "args": ["/path/to/allure-testops-mcp/dist/index.js"],
-      "env": {
-        "ALLURE_TESTOPS_URL": "https://allure-testops.labs.jb.gg",
-        "ALLURE_TOKEN": "your-token-here",
-        "PROJECT_ID": "1"
+```
+src/
+├── index.ts                                    # MCP server with extensible routing
+├── allure-client.ts                           # HTTP client for Allure API
+└── controllers/
+    ├── test-case-controller.ts               # Test case CRUD operations
+    ├── custom-field-controller.ts            # Custom field management
+    ├── test-case-custom-field-controller.ts  # Custom field values on test cases
+    └── test-case-search-controller.ts        # Advanced search and filters
+```
+
+## Extending the Server
+
+The server uses an extensible registry pattern that makes adding new controllers simple.
+
+### Adding a New Controller
+
+1. **Create Controller File** (`src/controllers/your-controller.ts`):
+
+```typescript
+import { AllureClient, PageParams, PageResponse } from '../allure-client.js';
+
+// Define your DTOs
+export interface YourDto {
+  id: number;
+  name: string;
+  // ... other fields
+}
+
+// Export tool definitions
+export const yourTools = [
+  {
+    name: 'allure_your_operation',
+    description: 'Description of what this tool does',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        id: {
+          type: 'number',
+          description: 'The resource ID',
+        },
+        // ... other parameters
+      },
+      required: ['id'],
+    },
+  },
+  // ... more tools
+];
+
+// Export tool handler
+export async function handleYourTool(
+  client: AllureClient,
+  toolName: string,
+  args: any
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_your_operation': {
+        const { id } = args;
+        const result = await client.get<YourDto>(`/api/your-endpoint/${id}`);
+        return JSON.stringify(result, null, 2);
       }
+
+      // ... more cases
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
     }
+  } catch (error: any) {
+    throw new Error(`Your operation failed: ${error.message}`);
   }
 }
 ```
 
-## Controllers Coverage
+2. **Register in `src/index.ts`**:
 
-The MCP server now provides comprehensive coverage of the Allure TestOps API through 47+ specialized controllers:
+```typescript
+// Import your controller
+import { yourTools, handleYourTool } from './controllers/your-controller.js';
 
-### Test Case Management
-- ✅ **test-case-controller** - CRUD operations for test cases
-- ✅ **test-case-search-controller** - Search test cases using AQL
-- ✅ **test-case-bulk-controller** - Bulk operations on test cases
-- ✅ **test-case-bulk-controller-v2** - Enhanced bulk operations (v2)
-- ✅ **test-case-attachment-controller** - Manage test case attachments
-- ✅ **test-case-tag-controller** - Manage test case tags
-- ✅ **test-case-audit-controller** - Test case audit logs
-- ✅ **test-case-sync-controller** - Synchronize test cases
-- ✅ **test-case-custom-field-controller** - Custom fields for test cases
-- ✅ **test-case-csv-import-controller** - Import test cases from CSV
-- ✅ **test-case-scenario-controller** - Manage test scenarios
-- ✅ **test-case-export-controller** - Export test cases (CSV/Excel/JSON)
-- ✅ **test-case-clone-controller** - Clone test cases
-- ✅ **test-case-overview-controller** - Test case overview and statistics
-- ✅ **test-case-tree-controller** - Test case tree structure
-- ✅ **test-case-tree-selection-controller** - Select test cases from tree
-
-### Launch Management
-- ✅ **launch-controller** - CRUD operations for launches
-- ✅ **launch-search-controller** - Search launches
-- ✅ **launch-diff-controller** - Compare launches
-- ✅ **launch-issue-controller** - Link issues to launches
-- ✅ **launch-tag-controller** - Manage launch tags
-- ✅ **launch-upload-controller** - Upload launch results
-
-### Test Plan Management
-- ✅ **test-plan-controller** - CRUD operations for test plans
-
-### Test Result Management
-- ✅ **test-result-controller** - CRUD operations for test results
-- ✅ **test-result-search-controller** - Search test results
-- ✅ **test-result-bulk-controller** - Bulk operations on test results
-- ✅ **test-result-custom-field-controller** - Custom fields for test results
-
-### Project Management
-- ✅ **project-controller** - CRUD operations for projects
-- ✅ **project-access-controller** - Manage project access rules
-- ✅ **project-metric-controller** - Project metrics and analytics
-- ✅ **project-collaborator-controller** - Manage project collaborators
-- ✅ **project-category-controller** - Project categories
-- ✅ **project-property-controller** - Project properties
-- ✅ **project-settings-controller** - Project settings
-
-### Dashboard & Visualization
-- ✅ **dashboard-controller** - CRUD operations for dashboards
-- ✅ **dashboard-template-controller** - Dashboard templates
-- ✅ **widget-controller** - Dashboard widgets
-
-### Custom Fields
-- ✅ **custom-field-controller** - CRUD operations for custom fields
-- ✅ **custom-field-project-controller** - Assign custom fields to projects
-- ✅ **custom-field-schema-controller** - Custom field schemas
-- ✅ **custom-field-value-controller** - Manage custom field values
-- ✅ **custom-field-value-bulk-controller** - Bulk operations on custom field values
-
-### Utility Controllers
-- ✅ **category-controller** - Manage categories
-- ✅ **filter-controller** - Manage filters
-- ✅ **member-controller** - Manage project members
-- ✅ **test-layer-controller** - Manage test layers
-- ✅ **tree-controller** - Tree structure operations
-- ✅ **upload-controller** - File upload operations
-
-## Architecture
-
-The codebase follows a modular controller-based architecture:
-
-```
-src/
-├── controllers/           # 47+ specialized controllers
-│   ├── test-case-controller.ts
-│   ├── launch-controller.ts
-│   └── ...
-├── allure-client.ts      # Main client with all controllers
-├── index.ts              # MCP server implementation
-└── csv-parser.ts         # CSV parsing utilities
+// Add to toolControllers array
+const toolControllers: ToolRegistry[] = [
+  {
+    tools: testCaseTools,
+    handler: handleTestCaseTool,
+  },
+  {
+    tools: customFieldTools,
+    handler: handleCustomFieldTool,
+  },
+  {
+    tools: testCaseSearchTools,
+    handler: handleTestCaseSearchTool,
+  },
+  // Add your controller here
+  {
+    tools: yourTools,
+    handler: handleYourTool,
+  },
+];
 ```
 
-Each controller is responsible for a specific domain and provides type-safe methods for interacting with the Allure TestOps API.
+3. **Rebuild**:
+
+```bash
+npm run build
+```
+
+That's it! The routing system automatically registers your tools and routes calls to your handler.
+
+### Why This Architecture?
+
+- **No Manual Routing**: Tools are automatically mapped to handlers
+- **Type Safety**: Full TypeScript support with proper types
+- **Easy Extension**: Just add to the array, no complex if/else chains
+- **Maintainable**: Each controller is self-contained
+- **Scalable**: Add dozens of controllers without code complexity
+
+## API Client Usage
+
+The `AllureClient` class provides typed HTTP methods:
+
+```typescript
+// GET request
+const result = await client.get<YourDto>('/api/endpoint', { param: 'value' });
+
+// POST request
+const created = await client.post<YourDto>('/api/endpoint', bodyData);
+
+// PATCH request
+const updated = await client.patch<YourDto>('/api/endpoint/123', patchData);
+
+// DELETE request
+await client.delete('/api/endpoint/123');
+```
 
 ## License
 
 MIT
-# allure-testops-mcp

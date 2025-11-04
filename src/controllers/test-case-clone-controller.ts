@@ -1,18 +1,52 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseCloneController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseCloneController {
-  constructor(private client: AxiosInstance) {}
+import { AllureClient } from '../allure-client.js';
 
-  async cloneTestCase(testCaseId: number, params?: any): Promise<any> {
-    const response = await this.client.post(`/api/rs/testcase/${testCaseId}/clone`, params);
-    return response.data;
-  }
+export const testCaseCloneControllerTools = [
+    {
+      "name": "allure_clone",
+      "description": "Clone test case",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Path parameter: id"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "id",
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async cloneTestCases(testCaseIds: number[], targetProjectId?: number): Promise<any> {
-    const response = await this.client.post(`/api/rs/testcase/clone/bulk`, {
-      ids: testCaseIds,
-      targetProjectId,
-    });
-    return response.data;
+export async function handleTestCaseCloneControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_clone': {
+        const { id, body } = args;
+        const result = await client.post(`/api/testcase/${args.id}/clone`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseCloneController operation failed: ${error.message}`);
   }
 }

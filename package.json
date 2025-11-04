@@ -1,7 +1,7 @@
 {
-  "name": "allure-testops-mcp",
+  "name": "example-mcp-server",
   "version": "1.0.0",
-  "description": "MCP server for Allure TestOps REST API integration",
+  "description": "A simple MCP server template with basic tooling",
   "type": "module",
   "main": "dist/index.js",
   "scripts": {
@@ -11,15 +11,12 @@
   },
   "keywords": [
     "mcp",
-    "allure",
-    "testops"
+    "model-context-protocol"
   ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
-    "axios": "^1.7.9",
-    "csv-parse": "^5.6.0"
+    "@modelcontextprotocol/sdk": "^1.0.4"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",

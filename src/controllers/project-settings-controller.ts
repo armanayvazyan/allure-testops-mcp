@@ -1,40 +1,115 @@
-import { AxiosInstance } from 'axios';
+/**
+ * ProjectSettingsController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export interface ProjectSettings {
-  [key: string]: any;
-}
+import { AllureClient } from '../allure-client.js';
 
-export class ProjectSettingsController {
-  constructor(
-    private client: AxiosInstance,
-    private projectId: string
-  ) {}
+export const projectSettingsControllerTools = [
+    {
+      "name": "allure_getLaunchCloseConfig",
+      "description": "Get launch close config",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number",
+            "description": "projectId"
+          }
+        },
+        "required": [
+          "projectId"
+        ]
+      }
+    },
+    {
+      "name": "allure_setLaunchCloseConfig",
+      "description": "Save launch close config",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "allure_getLaunchLiveDocConfig",
+      "description": "Get launch live documentation config",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "projectId": {
+            "type": "number",
+            "description": "projectId"
+          }
+        },
+        "required": [
+          "projectId"
+        ]
+      }
+    },
+    {
+      "name": "allure_setLaunchLiveDocConfig",
+      "description": "Save launch live documentation config",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async getSettings(): Promise<any> {
-    const response = await this.client.get(`/api/rs/project/${this.projectId}/settings`);
-    return response.data;
-  }
+export async function handleProjectSettingsControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_getLaunchCloseConfig': {
+        const { projectId } = args;
+        const queryParams = { projectId };
+        const result = await client.get(`/api/projectsettings/launchclose`, queryParams);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async updateSettings(settings: ProjectSettings): Promise<any> {
-    const response = await this.client.patch(
-      `/api/rs/project/${this.projectId}/settings`,
-      settings
-    );
-    return response.data;
-  }
+      case 'allure_setLaunchCloseConfig': {
+        const { body } = args;
+        const result = await client.patch(`/api/projectsettings/launchclose`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async getSetting(key: string): Promise<any> {
-    const response = await this.client.get(
-      `/api/rs/project/${this.projectId}/settings/${key}`
-    );
-    return response.data;
-  }
+      case 'allure_getLaunchLiveDocConfig': {
+        const { projectId } = args;
+        const queryParams = { projectId };
+        const result = await client.get(`/api/projectsettings/launchlivedoc`, queryParams);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async updateSetting(key: string, value: any): Promise<any> {
-    const response = await this.client.patch(
-      `/api/rs/project/${this.projectId}/settings/${key}`,
-      { value }
-    );
-    return response.data;
+      case 'allure_setLaunchLiveDocConfig': {
+        const { body } = args;
+        const result = await client.patch(`/api/projectsettings/launchlivedoc`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`ProjectSettingsController operation failed: ${error.message}`);
   }
 }

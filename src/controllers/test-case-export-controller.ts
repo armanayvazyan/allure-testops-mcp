@@ -1,31 +1,47 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseExportController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseExportController {
-  constructor(
-    private client: AxiosInstance,
-    private projectId: string
-  ) {}
+import { AllureClient } from '../allure-client.js';
 
-  async exportToCsv(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/export/csv`, {
-      params: { projectId: this.projectId, ...params },
-      responseType: 'blob',
-    });
-    return response.data;
-  }
+export const testCaseExportControllerTools = [
+    {
+      "name": "allure_exportToTms",
+      "description": "POST /api/testcase/tms/sync",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async exportToExcel(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/export/excel`, {
-      params: { projectId: this.projectId, ...params },
-      responseType: 'blob',
-    });
-    return response.data;
-  }
+export async function handleTestCaseExportControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_exportToTms': {
+        const { body } = args;
+        const result = await client.post(`/api/testcase/tms/sync`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async exportToJson(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/export/json`, {
-      params: { projectId: this.projectId, ...params },
-    });
-    return response.data;
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseExportController operation failed: ${error.message}`);
   }
 }

@@ -1,22 +1,74 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestResultCustomFieldController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestResultCustomFieldController {
-  constructor(private client: AxiosInstance) {}
+import { AllureClient } from '../allure-client.js';
 
-  async getCustomFields(testResultId: number): Promise<any> {
-    const response = await this.client.get(`/api/rs/testresult/${testResultId}/customfield`);
-    return response.data;
-  }
+export const testResultCustomFieldControllerTools = [
+    {
+      "name": "allure_getCustomFieldsWithValues_1",
+      "description": "Find custom fields with values for test result",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testResultId": {
+            "type": "number",
+            "description": "Path parameter: testResultId"
+          }
+        },
+        "required": [
+          "testResultId"
+        ]
+      }
+    },
+    {
+      "name": "allure_setIssues_1",
+      "description": "Set custom field values to test result",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testResultId": {
+            "type": "number",
+            "description": "Path parameter: testResultId"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "testResultId",
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async setCustomField(testResultId: number, customFieldId: number, value: any): Promise<any> {
-    const response = await this.client.post(
-      `/api/rs/testresult/${testResultId}/customfield/${customFieldId}`,
-      { value }
-    );
-    return response.data;
-  }
+export async function handleTestResultCustomFieldControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_getCustomFieldsWithValues_1': {
+        const { testResultId } = args;
+        const result = await client.get(`/api/testresult/${args.testResultId}/cfv`);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async deleteCustomField(testResultId: number, customFieldId: number): Promise<void> {
-    await this.client.delete(`/api/rs/testresult/${testResultId}/customfield/${customFieldId}`);
+      case 'allure_setIssues_1': {
+        const { testResultId, body } = args;
+        const result = await client.post(`/api/testresult/${args.testResultId}/cfv`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestResultCustomFieldController operation failed: ${error.message}`);
   }
 }

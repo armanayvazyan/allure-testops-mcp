@@ -1,35 +1,69 @@
-import { AxiosInstance } from 'axios';
+/**
+ * CustomFieldValueBulkController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class CustomFieldValueBulkController {
-  constructor(private client: AxiosInstance) {}
+import { AllureClient } from '../allure-client.js';
 
-  async bulkSetCustomFieldValues(
-    entityType: string,
-    entityIds: number[],
-    customFieldId: number,
-    value: any
-  ): Promise<any> {
-    const response = await this.client.post(
-      `/api/rs/${entityType}/customfield/${customFieldId}/bulk`,
-      {
-        ids: entityIds,
-        value,
+export const customFieldValueBulkControllerTools = [
+    {
+      "name": "allure_delete_50",
+      "description": "Delete custom field values from project",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
       }
-    );
-    return response.data;
-  }
-
-  async bulkDeleteCustomFieldValues(
-    entityType: string,
-    entityIds: number[],
-    customFieldId: number
-  ): Promise<any> {
-    const response = await this.client.delete(
-      `/api/rs/${entityType}/customfield/${customFieldId}/bulk`,
-      {
-        data: { ids: entityIds },
+    },
+    {
+      "name": "allure_merge_3",
+      "description": "Deprecated. Use POST /api/cfv/merge-by-name or /api/cfv/merge-by-id instead",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
       }
-    );
-    return response.data;
+    }
+  ];
+
+export async function handleCustomFieldValueBulkControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_delete_50': {
+        const { body } = args;
+        await client.delete(`/api/cfvbulk/delete`);
+        return 'Successfully deleted';
+      }
+
+      case 'allure_merge_3': {
+        const { body } = args;
+        const result = await client.post(`/api/cfvbulk/merge`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`CustomFieldValueBulkController operation failed: ${error.message}`);
   }
 }

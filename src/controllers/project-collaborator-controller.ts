@@ -1,32 +1,101 @@
-import { AxiosInstance } from 'axios';
+/**
+ * ProjectCollaboratorController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export interface Collaborator {
-  userId: number;
-  role?: string;
-}
+import { AllureClient } from '../allure-client.js';
 
-export class ProjectCollaboratorController {
-  constructor(
-    private client: AxiosInstance,
-    private projectId: string
-  ) {}
+export const projectCollaboratorControllerTools = [
+    {
+      "name": "allure_findAllCollaborators",
+      "description": "Find all permission sets",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Path parameter: id"
+          },
+          "page": {
+            "type": "number",
+            "description": "Zero-based page index (0..N)"
+          },
+          "size": {
+            "type": "number",
+            "description": "The size of the page to be returned"
+          },
+          "sort": {
+            "type": "array",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    },
+    {
+      "name": "allure_findAllProjectOwners",
+      "description": "Find project owners",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "number",
+            "description": "Path parameter: id"
+          },
+          "page": {
+            "type": "number",
+            "description": "Zero-based page index (0..N)"
+          },
+          "size": {
+            "type": "number",
+            "description": "The size of the page to be returned"
+          },
+          "sort": {
+            "type": "array",
+            "description": "Sorting criteria in the format: property(,asc|desc). Default sort order is ascending. Multiple sort criteria are supported.",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "id"
+        ]
+      }
+    }
+  ];
 
-  async getCollaborators(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/project/${this.projectId}/collaborator`, {
-      params,
-    });
-    return response.data;
-  }
+export async function handleProjectCollaboratorControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_findAllCollaborators': {
+        const { id, page, size, sort } = args;
+        const queryParams = { page, size, sort };
+        const result = await client.get(`/api/project/${args.id}/collaborator`, queryParams);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async addCollaborator(collaborator: Collaborator): Promise<any> {
-    const response = await this.client.post(
-      `/api/rs/project/${this.projectId}/collaborator`,
-      collaborator
-    );
-    return response.data;
-  }
+      case 'allure_findAllProjectOwners': {
+        const { id, page, size, sort } = args;
+        const queryParams = { page, size, sort };
+        const result = await client.get(`/api/project/${args.id}/owner`, queryParams);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async removeCollaborator(userId: number): Promise<void> {
-    await this.client.delete(`/api/rs/project/${this.projectId}/collaborator/${userId}`);
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`ProjectCollaboratorController operation failed: ${error.message}`);
   }
 }

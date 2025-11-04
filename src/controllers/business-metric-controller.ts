@@ -1,36 +1,38 @@
-import { AxiosInstance } from 'axios';
+/**
+ * BusinessMetricController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export interface BusinessMetric {
-  id?: number;
-  name: string;
-  description?: string;
-  type: string;
-}
+import { AllureClient } from '../allure-client.js';
 
-export class BusinessMetricController {
-  constructor(private client: AxiosInstance, private projectId: string) {}
+export const businessMetricControllerTools = [
+    {
+      "name": "allure_findAll_55",
+      "description": "Find all business metrics",
+      "inputSchema": {
+        "type": "object",
+        "properties": {}
+      }
+    }
+  ];
 
-  async getAll(params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/business-metric`, { params: { ...params, projectId: this.projectId } });
-    return response.data;
-  }
+export async function handleBusinessMetricControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_findAll_55': {
+        const result = await client.get(`/api/business-metric`);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async get(id: number): Promise<any> {
-    const response = await this.client.get(`/api/rs/business-metric/${id}`);
-    return response.data;
-  }
-
-  async create(metric: BusinessMetric): Promise<any> {
-    const response = await this.client.post(`/api/rs/business-metric`, { ...metric, projectId: this.projectId });
-    return response.data;
-  }
-
-  async update(id: number, metric: Partial<BusinessMetric>): Promise<any> {
-    const response = await this.client.patch(`/api/rs/business-metric/${id}`, metric);
-    return response.data;
-  }
-
-  async delete(id: number): Promise<void> {
-    await this.client.delete(`/api/rs/business-metric/${id}`);
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`BusinessMetricController operation failed: ${error.message}`);
   }
 }

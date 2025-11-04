@@ -1,19 +1,47 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseTreeSelectionController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseTreeSelectionController {
-  constructor(private client: AxiosInstance) {}
+import { AllureClient } from '../allure-client.js';
 
-  async selectTestCases(treeNodeId: number, params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/tree/${treeNodeId}/testcases`, {
-      params,
-    });
-    return response.data;
-  }
+export const testCaseTreeSelectionControllerTools = [
+    {
+      "name": "allure_countLeaves_2",
+      "description": "Count test cases by tree select",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async selectAllTestCases(treeNodeId: number, recursive: boolean = false): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/tree/${treeNodeId}/all`, {
-      params: { recursive },
-    });
-    return response.data;
+export async function handleTestCaseTreeSelectionControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_countLeaves_2': {
+        const { body } = args;
+        const result = await client.post(`/api/testcasetree/select`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseTreeSelectionController operation failed: ${error.message}`);
   }
 }

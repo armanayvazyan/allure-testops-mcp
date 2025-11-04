@@ -1,26 +1,106 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseCsvImportController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseCsvImportController {
-  constructor(
-    private client: AxiosInstance,
-    private projectId: string
-  ) {}
+import { AllureClient } from '../allure-client.js';
 
-  async importFromCsv(file: any, params?: any): Promise<any> {
-    const formData = new FormData();
-    formData.append('file', file);
+export const testCaseCsvImportControllerTools = [
+    {
+      "name": "allure_info",
+      "description": "Get testcase csv import file and return import info",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "importRequestId": {
+            "type": "number",
+            "description": "Path parameter: importRequestId"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "importRequestId",
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "allure_preview",
+      "description": "Preview testcase csv import",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "importRequestId": {
+            "type": "number",
+            "description": "Path parameter: importRequestId"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "importRequestId",
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "allure_submit",
+      "description": "Submit testcase csv import",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "importRequestId": {
+            "type": "number",
+            "description": "Path parameter: importRequestId"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "importRequestId",
+          "body"
+        ]
+      }
+    }
+  ];
 
-    const response = await this.client.post(`/api/rs/testcase/import/csv`, formData, {
-      params: { projectId: this.projectId, ...params },
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    return response.data;
-  }
+export async function handleTestCaseCsvImportControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_info': {
+        const { importRequestId, body } = args;
+        const result = await client.post(`/api/testcase/import/csv/${args.importRequestId}/info`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async getImportStatus(importId: string): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/import/csv/${importId}`);
-    return response.data;
+      case 'allure_preview': {
+        const { importRequestId, body } = args;
+        const result = await client.post(`/api/testcase/import/csv/${args.importRequestId}/preview`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      case 'allure_submit': {
+        const { importRequestId, body } = args;
+        const result = await client.post(`/api/testcase/import/csv/${args.importRequestId}/submit`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseCsvImportController operation failed: ${error.message}`);
   }
 }

@@ -1,24 +1,74 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseTagController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export interface Tag {
-  id?: number;
-  name: string;
-}
+import { AllureClient } from '../allure-client.js';
 
-export class TestCaseTagController {
-  constructor(private client: AxiosInstance) {}
+export const testCaseTagControllerTools = [
+    {
+      "name": "allure_getTags",
+      "description": "Find tags for test case",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testCaseId": {
+            "type": "number",
+            "description": "Path parameter: testCaseId"
+          }
+        },
+        "required": [
+          "testCaseId"
+        ]
+      }
+    },
+    {
+      "name": "allure_setTags",
+      "description": "Set test tags for test case",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testCaseId": {
+            "type": "number",
+            "description": "Path parameter: testCaseId"
+          },
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "testCaseId",
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async getTags(testCaseId: number): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/${testCaseId}/tag`);
-    return response.data;
-  }
+export async function handleTestCaseTagControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_getTags': {
+        const { testCaseId } = args;
+        const result = await client.get(`/api/testcase/${args.testCaseId}/tag`);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async addTag(testCaseId: number, tag: Tag): Promise<any> {
-    const response = await this.client.post(`/api/rs/testcase/${testCaseId}/tag`, tag);
-    return response.data;
-  }
+      case 'allure_setTags': {
+        const { testCaseId, body } = args;
+        const result = await client.post(`/api/testcase/${args.testCaseId}/tag`, body);
+        return JSON.stringify(result, null, 2);
+      }
 
-  async removeTag(testCaseId: number, tagId: number): Promise<void> {
-    await this.client.delete(`/api/rs/testcase/${testCaseId}/tag/${tagId}`);
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseTagController operation failed: ${error.message}`);
   }
 }

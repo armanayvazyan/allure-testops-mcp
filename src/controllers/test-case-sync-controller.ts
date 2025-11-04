@@ -1,21 +1,47 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseSyncController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseSyncController {
-  constructor(
-    private client: AxiosInstance,
-    private projectId: string
-  ) {}
+import { AllureClient } from '../allure-client.js';
 
-  async syncTestCases(syncConfig: any): Promise<any> {
-    const response = await this.client.post(`/api/rs/testcase/sync`, {
-      projectId: parseInt(this.projectId),
-      ...syncConfig,
-    });
-    return response.data;
-  }
+export const testCaseSyncControllerTools = [
+    {
+      "name": "allure_sync_1",
+      "description": "Clone test case",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "object",
+            "description": "Request body"
+          }
+        },
+        "required": [
+          "body"
+        ]
+      }
+    }
+  ];
 
-  async getSyncStatus(syncId: string): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/sync/${syncId}`);
-    return response.data;
+export async function handleTestCaseSyncControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_sync_1': {
+        const { body } = args;
+        const result = await client.post(`/api/testcase/bulk/sync`, body);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseSyncController operation failed: ${error.message}`);
   }
 }

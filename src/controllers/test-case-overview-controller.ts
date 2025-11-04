@@ -1,17 +1,47 @@
-import { AxiosInstance } from 'axios';
+/**
+ * TestCaseOverviewController - MCP Tools
+ * Generated from Swagger specification
+ */
 
-export class TestCaseOverviewController {
-  constructor(private client: AxiosInstance) {}
+import { AllureClient } from '../allure-client.js';
 
-  async getOverview(testCaseId: number): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/${testCaseId}/overview`);
-    return response.data;
-  }
+export const testCaseOverviewControllerTools = [
+    {
+      "name": "allure_getOverview",
+      "description": "Get test case overview",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "testCaseId": {
+            "type": "number",
+            "description": "Path parameter: testCaseId"
+          }
+        },
+        "required": [
+          "testCaseId"
+        ]
+      }
+    }
+  ];
 
-  async getStatistics(testCaseId: number, params?: any): Promise<any> {
-    const response = await this.client.get(`/api/rs/testcase/${testCaseId}/statistics`, {
-      params,
-    });
-    return response.data;
+export async function handleTestCaseOverviewControllerTool(
+  client: AllureClient,
+  toolName: string,
+  args: any,
+  defaultProjectId: string
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case 'allure_getOverview': {
+        const { testCaseId } = args;
+        const result = await client.get(`/api/testcase/${args.testCaseId}/overview`);
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${toolName}`);
+    }
+  } catch (error: any) {
+    throw new Error(`TestCaseOverviewController operation failed: ${error.message}`);
   }
 }
