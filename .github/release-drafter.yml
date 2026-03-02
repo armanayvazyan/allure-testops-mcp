@@ -1,0 +1,52 @@
+name-template: "v$RESOLVED_VERSION"
+tag-template: "v$RESOLVED_VERSION"
+change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
+no-changes-template: "- No user-facing changes in this release."
+
+categories:
+  - title: "Features"
+    labels:
+      - "enhancement"
+      - "feature"
+  - title: "Fixes"
+    labels:
+      - "bug"
+      - "fix"
+  - title: "Maintenance"
+    labels:
+      - "chore"
+      - "dependencies"
+      - "documentation"
+
+autolabeler:
+  - label: "documentation"
+    files:
+      - "*.md"
+      - ".github/**"
+  - label: "dependencies"
+    files:
+      - "package.json"
+      - "package-lock.json"
+  - label: "feature"
+    title:
+      - "/feat/i"
+  - label: "fix"
+    title:
+      - "/fix/i"
+
+version-resolver:
+  major:
+    labels:
+      - "major"
+  minor:
+    labels:
+      - "enhancement"
+      - "feature"
+  patch:
+    labels:
+      - "bug"
+      - "fix"
+      - "chore"
+      - "dependencies"
+      - "documentation"
+  default: patch

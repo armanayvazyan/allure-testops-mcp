@@ -1,269 +1,155 @@
-# Allure TestOps MCP Server
+# Allure TestOps MCP
 
-Model Context Protocol (MCP) server for Allure TestOps REST API. Provides comprehensive tooling for test case management, custom fields, and advanced search capabilities.
+Production-ready MCP server for Allure TestOps focused on test cases, launches, test results, and test plans.
 
 ## Features
 
-- **Test Case Management**: Full CRUD operations for test cases
-- **Custom Fields**: Create and manage custom fields with options
-- **Advanced Search**: Complex filtering and saved filters
-- **Extensible Architecture**: Easy to add new controllers
-- **TypeScript Support**: Fully typed implementation
-- **Docker Support**: Can be run as a containerized service
+- JWT bearer auth exchange from user API token, with in-memory caching and refresh on expiry.
+- Project-aware tools with optional default project via `ALLURE_PROJECT_ID`.
+- Project resolution by `projectId` or `projectName` for project-scoped operations.
+- Test case custom field support, including lookup and updates.
+- `stdio` transport for local MCP clients (`npx` or local build).
 
-## Prerequisites
+## Tool Coverage
 
-- Node.js 20+
-- Allure TestOps instance with API access
-- API token for authentication
+- Test cases: list, search, get, create, update, delete, restore, overview, history, scenario, tags, issues, custom fields
+- Launches: list, search, get, create, update, delete, close, reopen, statistics, progress, add test cases/plans
+- Test results: list, search, get, create, update, history, assign, resolve
+- Test plans: list, get, create, update, delete, run
 
-## Installation
+## Authentication
 
-```bash
-npm install
-```
+This server follows the Allure TestOps API guide:
+
+1. Use your user-generated API token in `ALLURE_TOKEN`.
+2. Server exchanges it at `/api/uaa/oauth/token`.
+3. Received bearer JWT is cached and reused until near expiry.
+
+Reference: https://docs.qameta.io/allure-testops/advanced/api/
 
 ## Environment Variables
 
-Set the following environment variables:
-
 ```bash
-export ALLURE_TESTOPS_URL="https://your-allure-instance.com"
-export ALLURE_TOKEN="your-api-token"
-export PROJECT_ID="your-project-id"
+ALLURE_TESTOPS_URL=https://allure-testops.labs.jb.gg/
+ALLURE_TOKEN=your-api-token
+# Optional default project:
+# ALLURE_PROJECT_ID=37
 ```
 
-## Usage
+- `ALLURE_TESTOPS_URL` required
+- `ALLURE_TOKEN` required
+- `ALLURE_PROJECT_ID` optional
 
-### Development Mode
+If `ALLURE_PROJECT_ID` is not set, tools that require project scope must receive:
+- `projectId`, or
+- `projectName` (resolved via `/api/project/suggest`)
+
+## Run Locally
+
+```bash
+npm install
+npm run build
+npm start
+```
+
+For local development:
 
 ```bash
 npm run dev
 ```
 
-### Production Build
+## MCP Client Setup
 
-```bash
-npm run build
-npm start
-```
+Use one of these server commands:
 
-## Available Tools (25 total)
+- Local build:
+  - `command`: `node`
+  - `args`: `["/absolute/path/to/allure-testops-mcp/dist/index.js"]`
+- `npx`:
+  - `command`: `npx`
+  - `args`: `["-y", "allure-testops-mcp"]`
 
-### Test Case Tools (5)
-- `allure_list_test_cases` - List test cases with pagination and filtering
-- `allure_get_test_case` - Get specific test case by ID
-- `allure_create_test_case` - Create new test cases
-- `allure_update_test_case` - Update existing test cases
-- `allure_delete_test_case` - Delete test cases
-
-### Custom Field Tools (9)
-- `allure_list_custom_fields` - List custom fields with filtering
-- `allure_get_custom_field` - Get specific custom field
-- `allure_create_custom_field` - Create new custom fields
-- `allure_update_custom_field` - Update custom fields
-- `allure_delete_custom_field` - Delete custom fields
-- `allure_archive_custom_field` - Archive/restore fields
-- `allure_suggest_custom_field_values` - Get value suggestions
-- `allure_count_custom_field_usage` - Count field usage
-- `allure_merge_custom_fields` - Merge multiple fields
-
-### Test Case Custom Field Tools (3)
-- `allure_get_test_case_custom_fields` - Get all custom field values for a test case
-- `allure_add_custom_fields_to_test_case` - Add custom fields to a test case
-- `allure_update_test_case_custom_field` - Update custom field value on a test case
-
-### Search & Filter Tools (8)
-- `allure_search_test_cases` - Advanced search with complex filtering
-- `allure_list_filters` - List saved filters
-- `allure_get_filter` - Get specific filter
-- `allure_create_filter` - Create saved filters
-- `allure_update_filter` - Update filters
-- `allure_delete_filter` - Delete filters
-- `allure_get_base_filter` - Get default filter
-- `allure_set_base_filter` - Set default filter
-
-## MCP Client Configuration
-
-### Using Node.js (Local Development)
-
-Add to your MCP client configuration (e.g., Claude Desktop):
+Common config block:
 
 ```json
 {
   "mcpServers": {
     "allure-testops": {
-      "command": "node",
-      "args": ["/path/to/allure-testops-mcp/dist/index.js"],
+      "command": "npx",
+      "args": ["-y", "allure-testops-mcp"],
       "env": {
-        "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
+        "ALLURE_TESTOPS_URL": "https://allure-testops.labs.jb.gg/",
         "ALLURE_TOKEN": "your-api-token",
-        "PROJECT_ID": "your-project-id"
+        "ALLURE_PROJECT_ID": "37"
       }
     }
   }
 }
 ```
 
-### Using Docker
+### Claude Desktop
 
-```json
-{
-  "mcpServers": {
-    "allure-testops": {
-      "command": "docker",
-      "args": [
-        "run",
-        "-i",
-        "--rm",
-        "-e", "ALLURE_TESTOPS_URL=https://your-allure-instance.com",
-        "-e", "ALLURE_TOKEN=your-api-token",
-        "-e", "PROJECT_ID=your-project-id",
-        "allure-testops-mcp"
-      ]
-    }
-  }
-}
-```
+- Open Claude Desktop MCP settings and add the `mcpServers` JSON entry above.
+- Restart Claude Desktop after saving config.
 
-## Project Structure
+### Claude Code
 
-```
-src/
-├── index.ts                                    # MCP server with extensible routing
-├── allure-client.ts                           # HTTP client for Allure API
-└── controllers/
-    ├── test-case-controller.ts               # Test case CRUD operations
-    ├── custom-field-controller.ts            # Custom field management
-    ├── test-case-custom-field-controller.ts  # Custom field values on test cases
-    └── test-case-search-controller.ts        # Advanced search and filters
-```
+- Add the same `mcpServers` entry in your Claude Code MCP configuration.
+- Restart your Claude Code session to load the server.
 
-## Extending the Server
+### Cursor
 
-The server uses an extensible registry pattern that makes adding new controllers simple.
+- Open Cursor MCP settings and add the same `mcpServers` entry.
+- Restart Cursor (or reload MCP servers) after saving.
 
-### Adding a New Controller
+### Other MCP Clients
 
-1. **Create Controller File** (`src/controllers/your-controller.ts`):
+Any MCP client that supports `stdio` servers can use this project with the same command/env configuration.
 
-```typescript
-import { AllureClient, PageParams, PageResponse } from '../allure-client.js';
+## CI and Quality Gates
 
-// Define your DTOs
-export interface YourDto {
-  id: number;
-  name: string;
-  // ... other fields
-}
+This repository includes GitHub Actions checks for pushed code and pull requests:
 
-// Export tool definitions
-export const yourTools = [
-  {
-    name: 'allure_your_operation',
-    description: 'Description of what this tool does',
-    inputSchema: {
-      type: 'object',
-      properties: {
-        id: {
-          type: 'number',
-          description: 'The resource ID',
-        },
-        // ... other parameters
-      },
-      required: ['id'],
-    },
-  },
-  // ... more tools
-];
+- compile (`npm run build`)
+- lint (`npm run lint`)
 
-// Export tool handler
-export async function handleYourTool(
-  client: AllureClient,
-  toolName: string,
-  args: any
-): Promise<string> {
-  try {
-    switch (toolName) {
-      case 'allure_your_operation': {
-        const { id } = args;
-        const result = await client.get<YourDto>(`/api/your-endpoint/${id}`);
-        return JSON.stringify(result, null, 2);
-      }
+CI workflow: [`.github/workflows/ci.yml`](.github/workflows/ci.yml)
 
-      // ... more cases
+## Review and Merge Policy
 
-      default:
-        throw new Error(`Unknown tool: ${toolName}`);
-    }
-  } catch (error: any) {
-    throw new Error(`Your operation failed: ${error.message}`);
-  }
-}
-```
+The repository uses code ownership with `@armanayvazyan`:
 
-2. **Register in `src/index.ts`**:
+- [`.github/CODEOWNERS`](.github/CODEOWNERS)
+- [`.github/workflows/auto-review-request.yml`](.github/workflows/auto-review-request.yml) auto-requests `@armanayvazyan` on new PRs
 
-```typescript
-// Import your controller
-import { yourTools, handleYourTool } from './controllers/your-controller.js';
+To require approval before merge, enable branch protection on your default branch with:
 
-// Add to toolControllers array
-const toolControllers: ToolRegistry[] = [
-  {
-    tools: testCaseTools,
-    handler: handleTestCaseTool,
-  },
-  {
-    tools: customFieldTools,
-    handler: handleCustomFieldTool,
-  },
-  {
-    tools: testCaseSearchTools,
-    handler: handleTestCaseSearchTool,
-  },
-  // Add your controller here
-  {
-    tools: yourTools,
-    handler: handleYourTool,
-  },
-];
-```
+1. Require a pull request before merging
+2. Require approvals
+3. Require review from Code Owners
+4. Require status checks to pass (`CI / checks`)
 
-3. **Rebuild**:
+## OSS Automation
+
+Included automation for typical open-source maintenance:
+
+- Dependabot updates: [`.github/dependabot.yml`](.github/dependabot.yml)
+- Stale issue/PR triage: [`.github/workflows/stale.yml`](.github/workflows/stale.yml)
+- Release notes drafting: [`.github/workflows/release-drafter.yml`](.github/workflows/release-drafter.yml)
+
+## Temporary Smoke Test
 
 ```bash
-npm run build
+ALLURE_TESTOPS_URL="https://allure-testops.labs.jb.gg/" \
+ALLURE_TOKEN="your-api-token" \
+ALLURE_PROJECT_ID="37" \
+npm run temp:test
 ```
 
-That's it! The routing system automatically registers your tools and routes calls to your handler.
+## Public Project Docs
 
-### Why This Architecture?
-
-- **No Manual Routing**: Tools are automatically mapped to handlers
-- **Type Safety**: Full TypeScript support with proper types
-- **Easy Extension**: Just add to the array, no complex if/else chains
-- **Maintainable**: Each controller is self-contained
-- **Scalable**: Add dozens of controllers without code complexity
-
-## API Client Usage
-
-The `AllureClient` class provides typed HTTP methods:
-
-```typescript
-// GET request
-const result = await client.get<YourDto>('/api/endpoint', { param: 'value' });
-
-// POST request
-const created = await client.post<YourDto>('/api/endpoint', bodyData);
-
-// PATCH request
-const updated = await client.patch<YourDto>('/api/endpoint/123', patchData);
-
-// DELETE request
-await client.delete('/api/endpoint/123');
-```
-
-## License
-
-MIT
+- [Contributing](./CONTRIBUTING.md)
+- [Code of Conduct](./CODE_OF_CONDUCT.md)
+- [Security Policy](./SECURITY.md)
+- [Changelog](./CHANGELOG.md)
+- [License](./LICENSE)
