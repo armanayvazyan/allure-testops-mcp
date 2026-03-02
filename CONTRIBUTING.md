@@ -18,7 +18,7 @@ npm run dev
 Run smoke test:
 
 ```bash
-ALLURE_TESTOPS_URL="https://allure-testops.labs.jb.gg/" \
+ALLURE_TESTOPS_URL="https://allure-testops.instance.com/" \
 ALLURE_TOKEN="your-api-token" \
 ALLURE_PROJECT_ID="37" \
 npm run temp:test
