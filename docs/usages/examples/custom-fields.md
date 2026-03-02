@@ -47,15 +47,44 @@ Set values on a test case:
 {
   "name": "set_test_case_custom_fields",
   "arguments": {
+    "projectId": 37,
     "testCaseId": 12345,
     "payload": [
       {
         "customField": {
           "id": 11
         },
-        "value": "High"
+        "values": [
+          {
+            "id": 101,
+            "name": "High"
+          }
+        ]
       }
     ]
   }
 }
 ```
+
+Flat payload items are also accepted and normalized automatically:
+
+```json
+{
+  "name": "set_test_case_custom_fields",
+  "arguments": {
+    "projectId": 37,
+    "testCaseId": 12345,
+    "payload": [
+      {
+        "id": 101,
+        "name": "High",
+        "customField": {
+          "id": 11
+        }
+      }
+    ]
+  }
+}
+```
+
+This tool adds values via `POST /api/v2/test-case/bulk/cfv/add` for the selected test case.

@@ -1,5 +1,6 @@
-import { AllureApiClient } from "../client.js";
-import { ToolBundle } from "./types.js";
+import type { AllureApiClient } from "../client.js";
+import * as api from "../api/test-results.js";
+import type { ToolBundle } from "./types.js";
 import {
   asObject,
   getObjectPayload,
@@ -124,8 +125,7 @@ export function createTestResultTools(
   const handlers = {
     list_test_results: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get("/api/testresult", {
-        launchId: getRequiredId(args, "launchId"),
+      return api.listTestResults(client, getRequiredId(args, "launchId"), {
         search: getOptionalString(args, "search"),
         filterId: getOptionalNumber(args, "filterId"),
         ...pickPagination(args),
@@ -134,44 +134,33 @@ export function createTestResultTools(
     search_test_results: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/testresult/__search", {
-        projectId,
-        rql: getRequiredString(args, "rql"),
+      return api.searchTestResults(client, projectId, getRequiredString(args, "rql"), {
         ...pickPagination(args),
       });
     },
     get_test_result: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testresult/${getRequiredId(args)}`);
+      return api.getTestResult(client, getRequiredId(args));
     },
     create_test_result: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post("/api/testresult", getObjectPayload(args));
+      return api.createTestResult(client, getObjectPayload(args));
     },
     update_test_result: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.patch(
-        `/api/testresult/${getRequiredId(args)}`,
-        getObjectPayload(args),
-      );
+      return api.updateTestResult(client, getRequiredId(args), getObjectPayload(args));
     },
     get_test_result_history: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testresult/${getRequiredId(args)}/history`, pickPagination(args));
+      return api.getTestResultHistory(client, getRequiredId(args), pickPagination(args));
     },
     assign_test_result: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/testresult/${getRequiredId(args)}/assign`,
-        getObjectPayload(args),
-      );
+      return api.assignTestResult(client, getRequiredId(args), getObjectPayload(args));
     },
     resolve_test_result: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/testresult/${getRequiredId(args)}/resolve`,
-        getObjectPayload(args),
-      );
+      return api.resolveTestResult(client, getRequiredId(args), getObjectPayload(args));
     },
   };
 

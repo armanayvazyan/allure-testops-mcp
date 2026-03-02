@@ -1,5 +1,6 @@
-import { AllureApiClient } from "../client.js";
-import { ToolBundle } from "./types.js";
+import type { AllureApiClient } from "../client.js";
+import * as api from "../api/test-cases.js";
+import type { ToolBundle } from "./types.js";
 import {
   asObject,
   ensureProjectIdInPayload,
@@ -240,11 +241,17 @@ export function createTestCaseTools(
     },
     {
       name: "set_test_case_custom_fields",
-      description: "Update custom field values for a test case.",
+      description:
+        "Add custom field values for a test case via bulk API. Supports grouped values [{ customField: { id }, values: [{ id|name }] }] and flat values [{ id|name, customField: { id } }].",
       inputSchema: {
         type: "object" as const,
         properties: {
           testCaseId: { type: "number" },
+          projectId: { type: "number" },
+          projectName: {
+            type: "string",
+            description: "Project name (alternative to projectId).",
+          },
           payload: { type: "array", items: { type: "object" } },
         },
         required: ["testCaseId", "payload"],
@@ -256,8 +263,7 @@ export function createTestCaseTools(
     list_test_cases: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/testcase", {
-        projectId,
+      return api.listTestCases(client, projectId, {
         search: getOptionalString(args, "search"),
         filterId: getOptionalNumber(args, "filterId"),
         ...pickPagination(args),
@@ -266,15 +272,13 @@ export function createTestCaseTools(
     search_test_cases: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/testcase/__search", {
-        projectId,
-        rql: getRequiredString(args, "rql"),
+      return api.searchTestCases(client, projectId, getRequiredString(args, "rql"), {
         ...pickPagination(args),
       });
     },
     get_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args)}`);
+      return api.getTestCase(client, getRequiredId(args));
     },
     create_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
@@ -282,61 +286,52 @@ export function createTestCaseTools(
         getObjectPayload(args),
         defaultProjectId,
       );
-      return client.post("/api/testcase", payload);
+      return api.createTestCase(client, payload);
     },
     update_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.patch(
-        `/api/testcase/${getRequiredId(args)}`,
-        getObjectPayload(args),
-      );
+      return api.updateTestCase(client, getRequiredId(args), getObjectPayload(args));
     },
     delete_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.delete(`/api/testcase/${getRequiredId(args)}`);
+      return api.deleteTestCase(client, getRequiredId(args));
     },
     get_test_case_overview: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args, "testCaseId")}/overview`);
+      return api.getTestCaseOverview(client, getRequiredId(args, "testCaseId"));
     },
     get_test_case_history: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args)}/history`, pickPagination(args));
+      return api.getTestCaseHistory(client, getRequiredId(args), pickPagination(args));
     },
     get_test_case_scenario: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args)}/scenario`);
+      return api.getTestCaseScenario(client, getRequiredId(args));
     },
     get_test_case_tags: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args, "testCaseId")}/tag`);
+      return api.getTestCaseTags(client, getRequiredId(args, "testCaseId"));
     },
     set_test_case_tags: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/testcase/${getRequiredId(args, "testCaseId")}/tag`,
-        args.payload,
-      );
+      return api.setTestCaseTags(client, getRequiredId(args, "testCaseId"), args.payload);
     },
     get_test_case_issues: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testcase/${getRequiredId(args, "testCaseId")}/issue`);
+      return api.getTestCaseIssues(client, getRequiredId(args, "testCaseId"));
     },
     set_test_case_issues: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/testcase/${getRequiredId(args, "testCaseId")}/issue`,
-        args.payload,
-      );
+      return api.setTestCaseIssues(client, getRequiredId(args, "testCaseId"), args.payload);
     },
     restore_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(`/api/testcase/${getRequiredId(args)}/restore`);
+      return api.restoreTestCase(client, getRequiredId(args));
     },
     list_project_custom_fields: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get(`/api/project/${projectId}/cf`, {
+      return api.listProjectCustomFields(client, projectId, {
         query: getOptionalString(args, "query"),
         ...pickPagination(args),
       });
@@ -344,31 +339,28 @@ export function createTestCaseTools(
     list_custom_field_values: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get(`/api/project/${projectId}/cfv`, {
-        customFieldId: getRequiredId(args, "customFieldId"),
+      return api.listCustomFieldValues(
+        client,
+        projectId,
+        getRequiredId(args, "customFieldId"),
+        {
         query: getOptionalString(args, "query"),
         global: getOptionalBoolean(args, "global"),
         testCaseSearch: getOptionalString(args, "testCaseSearch"),
         ...pickPagination(args),
-      });
+        },
+      );
     },
     get_test_case_custom_fields: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get(`/api/testcase/${getRequiredId(args, "testCaseId")}/cfv`, {
-        projectId,
-      });
+      return api.getTestCaseCustomFields(client, getRequiredId(args, "testCaseId"), projectId);
     },
     set_test_case_custom_fields: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const payload = args.payload;
-      if (!Array.isArray(payload)) {
-        throw new Error("\"payload\" must be an array.");
-      }
-      return client.patch(
-        `/api/testcase/${getRequiredId(args, "testCaseId")}/cfv`,
-        payload,
-      );
+      const projectId = await resolveProjectId(args, client, defaultProjectId);
+      const testCaseId = getRequiredId(args, "testCaseId");
+      return api.setTestCaseCustomFields(client, projectId, testCaseId, args.payload);
     },
   };
 

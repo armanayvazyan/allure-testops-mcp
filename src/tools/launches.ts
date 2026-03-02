@@ -1,5 +1,6 @@
-import { AllureApiClient } from "../client.js";
-import { ToolBundle } from "./types.js";
+import type { AllureApiClient } from "../client.js";
+import * as api from "../api/launches.js";
+import type { ToolBundle } from "./types.js";
 import {
   asObject,
   ensureProjectIdInPayload,
@@ -161,8 +162,7 @@ export function createLaunchTools(
     list_launches: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/launch", {
-        projectId,
+      return api.listLaunches(client, projectId, {
         search: getOptionalString(args, "search"),
         filterId: getOptionalNumber(args, "filterId"),
         ...pickPagination(args),
@@ -171,15 +171,13 @@ export function createLaunchTools(
     search_launches: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/launch/__search", {
-        projectId,
-        rql: getRequiredString(args, "rql"),
+      return api.searchLaunches(client, projectId, getRequiredString(args, "rql"), {
         ...pickPagination(args),
       });
     },
     get_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/launch/${getRequiredId(args)}`);
+      return api.getLaunch(client, getRequiredId(args));
     },
     create_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
@@ -187,45 +185,39 @@ export function createLaunchTools(
         getObjectPayload(args),
         defaultProjectId,
       );
-      return client.post("/api/launch", payload);
+      return api.createLaunch(client, payload);
     },
     update_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.patch(`/api/launch/${getRequiredId(args)}`, getObjectPayload(args));
+      return api.updateLaunch(client, getRequiredId(args), getObjectPayload(args));
     },
     delete_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.delete(`/api/launch/${getRequiredId(args)}`);
+      return api.deleteLaunch(client, getRequiredId(args));
     },
     close_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(`/api/launch/${getRequiredId(args)}/close`);
+      return api.closeLaunch(client, getRequiredId(args));
     },
     reopen_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(`/api/launch/${getRequiredId(args)}/reopen`);
+      return api.reopenLaunch(client, getRequiredId(args));
     },
     get_launch_statistic: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/launch/${getRequiredId(args)}/statistic`);
+      return api.getLaunchStatistic(client, getRequiredId(args));
     },
     get_launch_progress: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/launch/${getRequiredId(args)}/progress`);
+      return api.getLaunchProgress(client, getRequiredId(args));
     },
     add_test_cases_to_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/launch/${getRequiredId(args)}/testcase/add`,
-        getObjectPayload(args),
-      );
+      return api.addTestCasesToLaunch(client, getRequiredId(args), getObjectPayload(args));
     },
     add_test_plan_to_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post(
-        `/api/launch/${getRequiredId(args)}/testplan/add`,
-        getObjectPayload(args),
-      );
+      return api.addTestPlanToLaunch(client, getRequiredId(args), getObjectPayload(args));
     },
   };
 

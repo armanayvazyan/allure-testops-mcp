@@ -17,6 +17,7 @@ Each guide includes:
 - [Test Plans](./test-plans.md)
 - [Custom Fields](./custom-fields.md)
 - [Workflows](./workflows.md)
+- [System Prompt Template (Token-Saving)](./system-prompt-template.md)
 
 ## Project Scope Inputs
 

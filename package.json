@@ -14,7 +14,6 @@
     "start": "node dist/index.js",
     "dev": "tsx src/index.ts",
     "dev:ui": "tsx scripts/dev-ui.ts",
-    "temp:test": "tsx scripts/temp-smoke-test.ts",
     "test": "vitest run",
     "test:integration": "vitest run"
   },

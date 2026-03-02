@@ -1,5 +1,6 @@
-import { AllureApiClient } from "../client.js";
-import { ToolBundle } from "./types.js";
+import type { AllureApiClient } from "../client.js";
+import * as api from "../api/test-plans.js";
+import type { ToolBundle } from "./types.js";
 import {
   asObject,
   ensureProjectIdInPayload,
@@ -91,15 +92,14 @@ export function createTestPlanTools(
     list_test_plans: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       const projectId = await resolveProjectId(args, client, defaultProjectId);
-      return client.get("/api/testplan", {
-        projectId,
+      return api.listTestPlans(client, projectId, {
         search: getOptionalString(args, "search"),
         ...pickPagination(args),
       });
     },
     get_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.get(`/api/testplan/${getRequiredId(args)}`);
+      return api.getTestPlan(client, getRequiredId(args));
     },
     create_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
@@ -107,15 +107,15 @@ export function createTestPlanTools(
         getObjectPayload(args),
         defaultProjectId,
       );
-      return client.post("/api/testplan", payload);
+      return api.createTestPlan(client, payload);
     },
     update_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.patch(`/api/testplan/${getRequiredId(args)}`, getObjectPayload(args));
+      return api.updateTestPlan(client, getRequiredId(args), getObjectPayload(args));
     },
     delete_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.delete(`/api/testplan/${getRequiredId(args)}`);
+      return api.deleteTestPlan(client, getRequiredId(args));
     },
     run_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
@@ -126,7 +126,11 @@ export function createTestPlanTools(
       ) {
         throw new Error("\"payload\" must be an object when provided.");
       }
-      return client.post(`/api/testplan/${getRequiredId(args)}/run`, payload);
+      return api.runTestPlan(
+        client,
+        getRequiredId(args),
+        payload as Record<string, unknown> | undefined,
+      );
     },
   };
 
