@@ -17,6 +17,10 @@ Production-ready MCP server for Allure TestOps focused on test cases, launches, 
 - Test results: list, search, get, create, update, history, assign, resolve
 - Test plans: list, get, create, update, delete, run
 
+## Usage Examples
+
+See the [examples/](./examples/) folder for prompt-based use case guides covering test cases, launches, test results, test plans, custom fields, and end-to-end workflows.
+
 ## Authentication
 
 This server follows the Allure TestOps API guide:
@@ -46,16 +50,58 @@ If `ALLURE_PROJECT_ID` is not set, tools that require project scope must receive
 
 ## Run Locally
 
+### Prerequisites
+
+- Node.js v18+ and npm
+
+### Step-by-step
+
+1) Clone the repository:
+
+```bash
+git clone https://github.com/armanayvazyan/allure-testops-mcp.git
+cd allure-testops-mcp
+```
+
+2) Install dependencies:
+
 ```bash
 npm install
+```
+
+3) Create your local environment file from the example and fill required values:
+
+```bash
+cp .env.example .env
+```
+
+Set:
+- `ALLURE_TESTOPS_URL` (required)
+- `ALLURE_TOKEN` (required)
+- `ALLURE_PROJECT_ID` (optional default project)
+
+4) Build the project:
+
+```bash
 npm run build
+```
+
+5) Start the MCP server from the compiled output:
+
+```bash
 npm start
 ```
 
-For local development:
+6) Optional: run in development mode (TypeScript via `tsx`):
 
 ```bash
 npm run dev
+```
+
+7) Optional: run temporary smoke test against your TestOps instance:
+
+```bash
+npm run temp:test
 ```
 
 ## MCP Client Setup
