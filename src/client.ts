@@ -58,8 +58,9 @@ export class AllureApiClient {
     const retries = method === "GET" ? this.maxGetRetries : 0;
 
     for (let attempt = 0; attempt <= retries; attempt += 1) {
+      let response: Response;
       try {
-        const response = await fetch(url, {
+        response = await fetch(url, {
           method,
           headers: {
             Accept: "application/json",
@@ -70,26 +71,6 @@ export class AllureApiClient {
           signal: AbortSignal.timeout(this.requestTimeoutMs),
         });
 
-        if (!response.ok) {
-          const text = await response.text();
-          const message = `Allure API ${method} ${path} failed (${response.status}): ${text}`;
-          if (attempt < retries && [502, 503, 504].includes(response.status)) {
-            await this.wait(300 * (attempt + 1));
-            continue;
-          }
-          throw new Error(message);
-        }
-
-        if (response.status === 204) {
-          return undefined as T;
-        }
-
-        const contentType = response.headers.get("content-type") ?? "";
-        if (contentType.includes("application/json")) {
-          return (await response.json()) as T;
-        }
-
-        return (await response.text()) as T;
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
         if (attempt < retries && this.isRetryableNetworkError(message)) {
@@ -98,6 +79,27 @@ export class AllureApiClient {
         }
         throw error;
       }
+
+      if (!response.ok) {
+        const text = await response.text();
+        const message = `Allure API ${method} ${path} failed (${response.status}): ${text}`;
+        if (attempt < retries && [502, 503, 504].includes(response.status)) {
+          await this.wait(300 * (attempt + 1));
+          continue;
+        }
+        throw new Error(message);
+      }
+
+      if (response.status === 204) {
+        return undefined as T;
+      }
+
+      const contentType = response.headers.get("content-type") ?? "";
+      if (contentType.includes("application/json")) {
+        return (await response.json()) as T;
+      }
+
+      return (await response.text()) as T;
     }
 
     throw new Error(`Allure API ${method} ${path} failed after retries.`);

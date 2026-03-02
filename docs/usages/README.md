@@ -15,6 +15,7 @@ This directory contains end-user setup and usage guides for `allure-testops-mcp`
 ## Prompt Examples
 
 - [Examples Index](./examples/README.md)
+- [System Prompt Template (Token-Saving)](./examples/system-prompt-template.md)
 - [Test Cases](./examples/test-cases.md)
 - [Launches](./examples/launches.md)
 - [Test Results](./examples/test-results.md)

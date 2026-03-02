@@ -5,11 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { TokenManager } from "../src/auth.js";
 import { AllureApiClient } from "../src/client.js";
-import { createLaunchTools } from "../src/tools/launches.js";
-import { createTestCaseTools } from "../src/tools/test-cases.js";
-import { createTestPlanTools } from "../src/tools/test-plans.js";
-import { createTestResultTools } from "../src/tools/test-results.js";
-import { McpToolDefinition, ToolHandler } from "../src/tools/types.js";
+import { buildToolRegistry, parseOptionalProjectId, requiredEnv } from "../src/server-bootstrap.js";
 
 const DEFAULT_PORT = 3333;
 
@@ -46,28 +42,8 @@ function loadDotEnvFile(): void {
       continue;
     }
 
-    const value = stripWrappingQuotes(line.slice(separatorIndex + 1).trim());
-    process.env[key] = value;
+    process.env[key] = stripWrappingQuotes(line.slice(separatorIndex + 1).trim());
   }
-}
-
-function requiredEnv(name: string): string {
-  const value = process.env[name];
-  if (!value) {
-    throw new Error(`Missing required environment variable: ${name}`);
-  }
-  return value;
-}
-
-function parseOptionalProjectId(value: string | undefined): number | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const parsed = Number(value);
-  if (Number.isNaN(parsed)) {
-    throw new Error("ALLURE_PROJECT_ID must be a number when provided.");
-  }
-  return parsed;
 }
 
 function parsePort(value: string | undefined): number {
@@ -122,7 +98,6 @@ const html = `<!doctype html>
     <title>Allure MCP Local Debug UI</title>
     <style>
       :root {
-        color-scheme: light dark;
         --bg: #0f1116;
         --panel: #171a22;
         --panel-alt: #1d2230;
@@ -980,22 +955,7 @@ async function main(): Promise<void> {
 
   const tokenManager = new TokenManager({ baseUrl, apiToken });
   const client = new AllureApiClient({ baseUrl, tokenManager });
-
-  const bundles = [
-    createTestCaseTools(client, defaultProjectId),
-    createLaunchTools(client, defaultProjectId),
-    createTestResultTools(client, defaultProjectId),
-    createTestPlanTools(client, defaultProjectId),
-  ];
-
-  const tools: McpToolDefinition[] = [];
-  const handlers = new Map<string, ToolHandler>();
-  for (const bundle of bundles) {
-    tools.push(...bundle.tools);
-    for (const [name, handler] of Object.entries(bundle.handlers)) {
-      handlers.set(name, handler);
-    }
-  }
+  const { tools, handlers } = buildToolRegistry(client, defaultProjectId);
 
   const server = createServer(async (req, res) => {
     const method = req.method ?? "";
