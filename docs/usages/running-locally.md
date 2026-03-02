@@ -37,6 +37,28 @@ Development mode:
 npm run dev
 ```
 
+## Local Debug UI
+
+Start a browser-based chatbot UI for calling MCP tools and inspecting requests and responses:
+
+```bash
+npm run dev:ui
+# Open http://localhost:3333
+```
+
+Optionally change the port:
+
+```bash
+DEV_UI_PORT=4000 npm run dev:ui
+```
+
+The UI lists all available tools. Click a tool, edit the JSON arguments, press **Call**, and inspect the result inline.
+
+Each tool includes ready payload examples:
+- **Required payload**: only required schema fields
+- **Required + optional payload**: full payload with optional fields filled with sample values
+- **Last working example**: the last successful payload you used for that tool
+
 ## MCP Server Command (Local Build)
 
 ```json
