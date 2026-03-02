@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import { TokenManager } from "../src/auth.js";
 import { AllureApiClient } from "../src/client.js";
-import { buildToolRegistry, parseOptionalProjectId, requiredEnv } from "../src/server-bootstrap.js";
+import { buildToolRegistry, requiredEnv } from "../src/server-bootstrap.js";
 
 const DEFAULT_PORT = 3333;
 
@@ -53,6 +53,17 @@ function parsePort(value: string | undefined): number {
   const parsed = Number(value);
   if (!Number.isInteger(parsed) || parsed <= 0 || parsed > 65535) {
     throw new Error("DEV_UI_PORT must be a valid port number (1-65535).");
+  }
+  return parsed;
+}
+
+function parseOptionalProjectId(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error("ALLURE_PROJECT_ID must be a number when provided.");
   }
   return parsed;
 }
@@ -954,8 +965,8 @@ async function main(): Promise<void> {
   const port = parsePort(process.env.DEV_UI_PORT);
 
   const tokenManager = new TokenManager({ baseUrl, apiToken });
-  const client = new AllureApiClient({ baseUrl, tokenManager });
-  const { tools, handlers } = buildToolRegistry(client, defaultProjectId);
+  const client = new AllureApiClient({ baseUrl, tokenManager, defaultProjectId });
+  const { tools, handlers } = buildToolRegistry(client);
 
   const server = createServer(async (req, res) => {
     const method = req.method ?? "";

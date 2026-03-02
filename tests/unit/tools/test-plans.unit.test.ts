@@ -19,21 +19,21 @@ vi.mock("../../../src/api/test-plans.js", () => ({
 }));
 
 describe("createTestPlanTools", () => {
-  const client = createMockClient();
   const defaultProjectId = 15;
+  const client = createMockClient(defaultProjectId);
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("defines tool schemas and handlers for every test plan tool", () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     expectToolHandlerParity(bundle);
     expectObjectSchemas(bundle);
   });
 
   it("has expected required fields in critical tool schemas", () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
 
     expectRequiredFields(bundle.tools, "get_test_plan", ["id"]);
     expectRequiredFields(bundle.tools, "create_test_plan", ["payload"]);
@@ -45,7 +45,7 @@ describe("createTestPlanTools", () => {
   });
 
   it("list_test_plans forwards pagination and default projectId", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     vi.mocked(api.listTestPlans).mockResolvedValueOnce([{ id: 1 }]);
 
     const result = await bundle.handlers.list_test_plans({ search: "smoke", page: 1, size: 20 });
@@ -60,12 +60,12 @@ describe("createTestPlanTools", () => {
   });
 
   it("get_test_plan validates id", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     await expect(bundle.handlers.get_test_plan({})).rejects.toThrow('"id" must be a number.');
   });
 
   it("create_test_plan injects default projectId", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     vi.mocked(api.createTestPlan).mockResolvedValueOnce({ id: 2 });
 
     await bundle.handlers.create_test_plan({ payload: { name: "regression" } });
@@ -77,14 +77,14 @@ describe("createTestPlanTools", () => {
   });
 
   it("update_test_plan requires payload object", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     await expect(bundle.handlers.update_test_plan({ id: 4, payload: "bad" })).rejects.toThrow(
       '"payload" must be an object.',
     );
   });
 
   it("delete_test_plan forwards id", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     vi.mocked(api.deleteTestPlan).mockResolvedValueOnce(undefined);
 
     await bundle.handlers.delete_test_plan({ id: 7 });
@@ -93,7 +93,7 @@ describe("createTestPlanTools", () => {
   });
 
   it("run_test_plan accepts undefined payload and validates object when provided", async () => {
-    const bundle = createTestPlanTools(client as never, defaultProjectId);
+    const bundle = createTestPlanTools(client as never);
     vi.mocked(api.runTestPlan).mockResolvedValueOnce({ ok: true });
 
     await bundle.handlers.run_test_plan({ id: 10 });

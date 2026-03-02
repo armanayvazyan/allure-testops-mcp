@@ -87,7 +87,6 @@ interface ProjectSuggestResponse {
 export async function resolveProjectId(
   args: ToolArgs,
   client: AllureApiClient,
-  defaultProjectId: number | undefined,
 ): Promise<number> {
   const explicitProjectId = getOptionalNumber(args, "projectId");
   if (explicitProjectId !== undefined) {
@@ -125,8 +124,8 @@ export async function resolveProjectId(
     return exactMatch.id;
   }
 
-  if (defaultProjectId !== undefined) {
-    return defaultProjectId;
+  if (client.defaultProjectId !== undefined) {
+    return client.defaultProjectId;
   }
 
   throw new Error(
@@ -147,13 +146,13 @@ export function getObjectPayload(
 
 export function ensureProjectIdInPayload(
   payload: Record<string, unknown>,
-  defaultProjectId: number | undefined,
+  client: AllureApiClient,
 ): Record<string, unknown> {
   if (payload.projectId !== undefined) {
     return payload;
   }
-  if (defaultProjectId !== undefined) {
-    return { ...payload, projectId: defaultProjectId };
+  if (client.defaultProjectId !== undefined) {
+    return { ...payload, projectId: client.defaultProjectId };
   }
   return payload;
 }

@@ -21,21 +21,21 @@ vi.mock("../../../src/api/test-results.js", () => ({
 }));
 
 describe("createTestResultTools", () => {
-  const client = createMockClient();
   const defaultProjectId = 88;
+  const client = createMockClient(defaultProjectId);
 
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("defines tool schemas and handlers for every test result tool", () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
     expectToolHandlerParity(bundle);
     expectObjectSchemas(bundle);
   });
 
   it("has expected required fields in critical tool schemas", () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
 
     expectRequiredFields(bundle.tools, "list_test_results", ["launchId"]);
     expectRequiredFields(bundle.tools, "search_test_results", ["rql"]);
@@ -48,7 +48,7 @@ describe("createTestResultTools", () => {
   });
 
   it("list_test_results validates launchId and forwards pagination", async () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
     vi.mocked(api.listTestResults).mockResolvedValueOnce([{ id: 1 }]);
 
     const result = await bundle.handlers.list_test_results({
@@ -69,14 +69,14 @@ describe("createTestResultTools", () => {
   });
 
   it("search_test_results requires rql", async () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
     await expect(bundle.handlers.search_test_results({ projectId: 1 })).rejects.toThrow(
       '"rql" must be a non-empty string.',
     );
   });
 
   it("search_test_results resolves project from default project id", async () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
     vi.mocked(api.searchTestResults).mockResolvedValueOnce([]);
 
     await bundle.handlers.search_test_results({ rql: "status = failed" });
@@ -89,7 +89,7 @@ describe("createTestResultTools", () => {
   });
 
   it("get/create/update handlers validate required fields", async () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
 
     await expect(bundle.handlers.get_test_result({})).rejects.toThrow('"id" must be a number.');
     await expect(bundle.handlers.create_test_result({ payload: [] })).rejects.toThrow(
@@ -101,7 +101,7 @@ describe("createTestResultTools", () => {
   });
 
   it("history, assign and resolve handlers call API with expected args", async () => {
-    const bundle = createTestResultTools(client as never, defaultProjectId);
+    const bundle = createTestResultTools(client as never);
     vi.mocked(api.getTestResultHistory).mockResolvedValueOnce([]);
     vi.mocked(api.assignTestResult).mockResolvedValueOnce({ ok: true });
     vi.mocked(api.resolveTestResult).mockResolvedValueOnce({ ok: true });

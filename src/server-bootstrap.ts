@@ -13,26 +13,14 @@ export function requiredEnv(name: string): string {
   return value;
 }
 
-export function parseOptionalProjectId(value: string | undefined): number | undefined {
-  if (!value) {
-    return undefined;
-  }
-  const parsed = Number(value);
-  if (Number.isNaN(parsed)) {
-    throw new Error("ALLURE_PROJECT_ID must be a number when provided.");
-  }
-  return parsed;
-}
-
 export function buildToolRegistry(
   client: AllureApiClient,
-  defaultProjectId: number | undefined,
 ): { tools: McpToolDefinition[]; handlers: Map<string, ToolHandler> } {
   const bundles = [
-    createTestCaseTools(client, defaultProjectId),
-    createLaunchTools(client, defaultProjectId),
-    createTestResultTools(client, defaultProjectId),
-    createTestPlanTools(client, defaultProjectId),
+    createTestCaseTools(client),
+    createLaunchTools(client),
+    createTestResultTools(client),
+    createTestPlanTools(client),
   ];
 
   const tools: McpToolDefinition[] = [];

@@ -14,7 +14,6 @@ import {
 
 export function createTestResultTools(
   client: AllureApiClient,
-  defaultProjectId?: number,
 ): ToolBundle {
   const tools = [
     {
@@ -133,7 +132,7 @@ export function createTestResultTools(
     },
     search_test_results: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const projectId = await resolveProjectId(args, client, defaultProjectId);
+      const projectId = await resolveProjectId(args, client);
       return api.searchTestResults(client, projectId, getRequiredString(args, "rql"), {
         ...pickPagination(args),
       });

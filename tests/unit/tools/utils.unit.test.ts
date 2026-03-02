@@ -84,9 +84,16 @@ describe("tool utils", () => {
   });
 
   it("ensureProjectIdInPayload only injects projectId when missing and default exists", () => {
-    expect(ensureProjectIdInPayload({ name: "x" }, 9)).toEqual({ name: "x", projectId: 9 });
-    expect(ensureProjectIdInPayload({ projectId: 11 }, 9)).toEqual({ projectId: 11 });
-    expect(ensureProjectIdInPayload({ name: "x" }, undefined)).toEqual({ name: "x" });
+    expect(ensureProjectIdInPayload({ name: "x" }, { defaultProjectId: 9 } as never)).toEqual({
+      name: "x",
+      projectId: 9,
+    });
+    expect(ensureProjectIdInPayload({ projectId: 11 }, { defaultProjectId: 9 } as never)).toEqual({
+      projectId: 11,
+    });
+    expect(ensureProjectIdInPayload({ name: "x" }, { defaultProjectId: undefined } as never)).toEqual({
+      name: "x",
+    });
   });
 
   it("pickPagination maps typed pagination fields", () => {
@@ -103,8 +110,8 @@ describe("tool utils", () => {
   });
 
   it("resolveProjectId prefers explicit projectId", async () => {
-    const client = { get: vi.fn() };
-    const result = await resolveProjectId({ projectId: 77 }, client as never, 99);
+    const client = { get: vi.fn(), defaultProjectId: 99 };
+    const result = await resolveProjectId({ projectId: 77 }, client as never);
     expect(result).toBe(77);
     expect(client.get).not.toHaveBeenCalled();
   });
@@ -117,32 +124,37 @@ describe("tool utils", () => {
           { id: 25, name: "Demo Project" },
         ],
       }),
+      defaultProjectId: 99,
     };
-    const result = await resolveProjectId({ projectName: "demo project" }, client as never, 99);
+    const result = await resolveProjectId({ projectName: "demo project" }, client as never);
     expect(result).toBe(25);
     expect(client.get).toHaveBeenCalledWith("/api/project/suggest", { query: "demo project" });
   });
 
   it("resolveProjectId rejects empty projectName", async () => {
-    const client = { get: vi.fn() };
+    const client = { get: vi.fn(), defaultProjectId: undefined };
     await expect(
-      resolveProjectId({ projectName: "  " }, client as never, undefined),
+      resolveProjectId({ projectName: "  " }, client as never),
     ).rejects.toThrow('"projectName" must be a non-empty string when provided.');
   });
 
   it("resolveProjectId rejects unknown projectName", async () => {
-    const client = { get: vi.fn().mockResolvedValue({ content: [{ id: 1, name: "X" }] }) };
+    const client = {
+      get: vi.fn().mockResolvedValue({ content: [{ id: 1, name: "X" }] }),
+      defaultProjectId: undefined,
+    };
     await expect(
-      resolveProjectId({ projectName: "Y" }, client as never, undefined),
+      resolveProjectId({ projectName: "Y" }, client as never),
     ).rejects.toThrow(
       'Project "Y" not found. Pass "projectId" explicitly or use an exact project name.',
     );
   });
 
   it("resolveProjectId falls back to default project id and then errors when unavailable", async () => {
-    const client = { get: vi.fn() };
-    await expect(resolveProjectId({}, client as never, 55)).resolves.toBe(55);
-    await expect(resolveProjectId({}, client as never, undefined)).rejects.toThrow(
+    await expect(resolveProjectId({}, { get: vi.fn(), defaultProjectId: 55 } as never)).resolves.toBe(55);
+    await expect(
+      resolveProjectId({}, { get: vi.fn(), defaultProjectId: undefined } as never),
+    ).rejects.toThrow(
       'Project scope is required. Pass "projectId" or "projectName", or set ALLURE_PROJECT_ID in env.',
     );
   });

@@ -15,7 +15,6 @@ import {
 
 export function createLaunchTools(
   client: AllureApiClient,
-  defaultProjectId?: number,
 ): ToolBundle {
   const tools = [
     {
@@ -161,7 +160,7 @@ export function createLaunchTools(
   const handlers = {
     list_launches: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const projectId = await resolveProjectId(args, client, defaultProjectId);
+      const projectId = await resolveProjectId(args, client);
       return api.listLaunches(client, projectId, {
         search: getOptionalString(args, "search"),
         filterId: getOptionalNumber(args, "filterId"),
@@ -170,7 +169,7 @@ export function createLaunchTools(
     },
     search_launches: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const projectId = await resolveProjectId(args, client, defaultProjectId);
+      const projectId = await resolveProjectId(args, client);
       return api.searchLaunches(client, projectId, getRequiredString(args, "rql"), {
         ...pickPagination(args),
       });
@@ -181,10 +180,7 @@ export function createLaunchTools(
     },
     create_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const payload = ensureProjectIdInPayload(
-        getObjectPayload(args),
-        defaultProjectId,
-      );
+      const payload = ensureProjectIdInPayload(getObjectPayload(args), client);
       return api.createLaunch(client, payload);
     },
     update_launch: async (rawArgs: unknown) => {

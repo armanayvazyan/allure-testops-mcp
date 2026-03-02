@@ -34,6 +34,14 @@ User-focused runtime and integration docs are in [`docs/usages/`](./docs/usages/
 - [`docs/usages/examples/custom-fields.md`](./docs/usages/examples/custom-fields.md)
 - [`docs/usages/examples/workflows.md`](./docs/usages/examples/workflows.md)
 
+## Tool Catalog (GitHub Pages)
+
+The auto-generated MCP tool catalog is published via GitHub Pages:
+
+- https://armanayvazyan.github.io/allure-testops-mcp/
+
+The page content is generated from source tool definitions. When a new tool is added to `src/tools/*.ts`, the Pages workflow regenerates `docs/tools.json` and updates the site automatically.
+
 ## Authentication
 
 This server follows the Allure TestOps API guide:
