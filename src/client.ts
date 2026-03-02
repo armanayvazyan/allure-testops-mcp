@@ -6,17 +6,20 @@ type QueryParams = Record<string, QueryValue | undefined | null>;
 export interface AllureApiClientOptions {
   baseUrl: string;
   tokenManager: TokenManager;
+  defaultProjectId?: number;
 }
 
 export class AllureApiClient {
   private readonly baseUrl: string;
   private readonly tokenManager: TokenManager;
+  readonly defaultProjectId: number | undefined;
   private readonly maxGetRetries = 2;
   private readonly requestTimeoutMs = 30000;
 
   constructor(options: AllureApiClientOptions) {
     this.baseUrl = options.baseUrl.replace(/\/+$/, "");
     this.tokenManager = options.tokenManager;
+    this.defaultProjectId = options.defaultProjectId;
   }
 
   async get<T>(path: string, query?: QueryParams): Promise<T> {

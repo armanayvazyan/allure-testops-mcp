@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Allure TestOps MCP Tools</title>
+    <style>
+      :root {
+        --bg: #f7f7fc;
+        --surface: #ffffff;
+        --surface-muted: #f1efff;
+        --text: #1d1b2a;
+        --text-muted: #5d5873;
+        --border: #e3def8;
+        --accent: #6c47ff;
+        --accent-soft: #ece6ff;
+        --danger: #8b1e4a;
+        --radius: 14px;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+      }
+
+      .container {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 24px 16px 40px;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #ffffff 0%, #f4f0ff 100%);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 24px;
+      }
+
+      .title {
+        margin: 0;
+        font-size: clamp(1.35rem, 2.5vw, 2rem);
+      }
+
+      .subtitle {
+        margin: 6px 0 0;
+        color: var(--text-muted);
+      }
+
+      .header-row {
+        margin-top: 16px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .badge {
+        background: var(--accent-soft);
+        color: var(--accent);
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+
+      .link {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .search-wrap {
+        margin-top: 18px;
+      }
+
+      .search {
+        width: 100%;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        padding: 12px 14px;
+        background: #fff;
+      }
+
+      .search:focus {
+        outline: 2px solid #d6ccff;
+        border-color: #ccbfff;
+      }
+
+      .content {
+        margin-top: 20px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .category {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+      }
+
+      .category > summary {
+        list-style: none;
+        cursor: pointer;
+        padding: 14px 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #fff;
+      }
+
+      .category > summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .category-title {
+        font-weight: 700;
+      }
+
+      .category-count {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .tool-grid {
+        border-top: 1px solid var(--border);
+        background: #fcfbff;
+        padding: 12px;
+        display: grid;
+        gap: 10px;
+      }
+
+      .tool {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #fff;
+        padding: 12px;
+      }
+
+      .tool-name {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: #2b2053;
+      }
+
+      .tool-description {
+        margin: 6px 0 0;
+        color: var(--text-muted);
+      }
+
+      .params {
+        margin-top: 8px;
+      }
+
+      .params > summary {
+        cursor: pointer;
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .param-list {
+        margin: 10px 0 0;
+        padding: 0;
+        list-style: none;
+        display: grid;
+        gap: 8px;
+      }
+
+      .param-item {
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        padding: 8px 10px;
+        font-size: 0.9rem;
+      }
+
+      .param-head {
+        display: flex;
+        gap: 8px;
+        align-items: baseline;
+        flex-wrap: wrap;
+      }
+
+      .param-name {
+        font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+        font-weight: 700;
+      }
+
+      .param-type {
+        color: var(--text-muted);
+      }
+
+      .required {
+        color: var(--danger);
+        font-size: 0.8rem;
+        font-weight: 700;
+      }
+
+      .param-description {
+        margin: 4px 0 0;
+        color: var(--text-muted);
+      }
+
+      .empty {
+        text-align: center;
+        padding: 28px 12px;
+        border: 1px dashed var(--border);
+        border-radius: var(--radius);
+        color: var(--text-muted);
+        background: var(--surface);
+      }
+
+      .footer {
+        margin-top: 18px;
+        color: var(--text-muted);
+        font-size: 0.85rem;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <section class="header">
+        <h1 class="title">Allure TestOps MCP Tool Catalog</h1>
+        <p class="subtitle">Auto-generated list of all available MCP tools and their input schemas.</p>
+        <div class="header-row">
+          <span class="badge" id="totalToolsBadge">Tools: -</span>
+          <span class="badge" id="visibleToolsBadge">Visible: -</span>
+          <a class="link" href="https://github.com/armanayvazyan/allure-testops-mcp" target="_blank" rel="noreferrer">GitHub Repository</a>
+        </div>
+        <div class="search-wrap">
+          <input
+            id="searchInput"
+            class="search"
+            type="search"
+            placeholder="Search by tool name, description, or parameter..."
+            autocomplete="off"
+          />
+        </div>
+      </section>
+
+      <section class="content" id="content"></section>
+      <p class="footer" id="footerText">Loading tool metadata...</p>
+    </main>
+
+    <script>
+      const content = document.getElementById("content");
+      const searchInput = document.getElementById("searchInput");
+      const totalToolsBadge = document.getElementById("totalToolsBadge");
+      const visibleToolsBadge = document.getElementById("visibleToolsBadge");
+      const footerText = document.getElementById("footerText");
+
+      let catalog = null;
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      function normalizeText(value) {
+        return String(value || "").toLowerCase();
+      }
+
+      function getParamType(paramSchema) {
+        if (!paramSchema || typeof paramSchema !== "object") {
+          return "unknown";
+        }
+        if (typeof paramSchema.type === "string") {
+          return paramSchema.type;
+        }
+        if (Array.isArray(paramSchema.type)) {
+          return paramSchema.type.join(" | ");
+        }
+        return "unknown";
+      }
+
+      function renderParameters(tool) {
+        const schema = tool.inputSchema || {};
+        const properties = schema.properties || {};
+        const required = new Set(schema.required || []);
+        const keys = Object.keys(properties);
+        if (keys.length === 0) {
+          return '<p class="param-description">No input parameters.</p>';
+        }
+
+        const items = keys
+          .map((name) => {
+            const param = properties[name] || {};
+            const type = getParamType(param);
+            const desc = typeof param.description === "string" ? param.description : "";
+            return `
+              <li class="param-item">
+                <div class="param-head">
+                  <span class="param-name">${escapeHtml(name)}</span>
+                  <span class="param-type">(${escapeHtml(type)})</span>
+                  ${required.has(name) ? '<span class="required">required</span>' : ""}
+                </div>
+                ${desc ? `<p class="param-description">${escapeHtml(desc)}</p>` : ""}
+              </li>
+            `;
+          })
+          .join("");
+
+        return `<ul class="param-list">${items}</ul>`;
+      }
+
+      function toolMatches(tool, query) {
+        if (!query) {
+          return true;
+        }
+        const schema = tool.inputSchema || {};
+        const properties = schema.properties || {};
+        const haystack = [
+          tool.name,
+          tool.description,
+          ...Object.keys(properties),
+          ...Object.values(properties).map((p) => p && p.description),
+        ]
+          .map(normalizeText)
+          .join(" ");
+        return haystack.includes(query);
+      }
+
+      function render() {
+        if (!catalog) {
+          return;
+        }
+
+        const query = normalizeText(searchInput.value).trim();
+        const categories = catalog.categories
+          .map((category) => ({
+            name: category.name,
+            tools: category.tools.filter((tool) => toolMatches(tool, query)),
+          }))
+          .filter((category) => category.tools.length > 0);
+
+        const visibleToolCount = categories.reduce((acc, category) => acc + category.tools.length, 0);
+        totalToolsBadge.textContent = `Tools: ${catalog.totalTools}`;
+        visibleToolsBadge.textContent = `Visible: ${visibleToolCount}`;
+
+        if (visibleToolCount === 0) {
+          content.innerHTML = '<div class="empty">No tools match your search.</div>';
+          return;
+        }
+
+        const html = categories
+          .map((category, idx) => {
+            const toolsHtml = category.tools
+              .map(
+                (tool) => `
+                  <article class="tool">
+                    <div class="tool-name">${escapeHtml(tool.name)}</div>
+                    <p class="tool-description">${escapeHtml(tool.description || "No description.")}</p>
+                    <details class="params">
+                      <summary>Parameters</summary>
+                      ${renderParameters(tool)}
+                    </details>
+                  </article>
+                `,
+              )
+              .join("");
+
+            return `
+              <details class="category" ${idx === 0 ? "open" : ""}>
+                <summary>
+                  <span class="category-title">${escapeHtml(category.name)}</span>
+                  <span class="category-count">${category.tools.length} tool${category.tools.length > 1 ? "s" : ""}</span>
+                </summary>
+                <div class="tool-grid">
+                  ${toolsHtml}
+                </div>
+              </details>
+            `;
+          })
+          .join("");
+
+        content.innerHTML = html;
+      }
+
+      async function loadCatalog() {
+        try {
+          const response = await fetch("./tools.json", { cache: "no-store" });
+          if (!response.ok) {
+            throw new Error(`Unable to load tools.json (${response.status})`);
+          }
+          catalog = await response.json();
+          const generatedAt = new Date(catalog.generatedAt);
+          const timestamp = Number.isNaN(generatedAt.getTime())
+            ? "unknown time"
+            : generatedAt.toLocaleString();
+          footerText.textContent = `Auto-generated from source tools. Last generated: ${timestamp}.`;
+          render();
+        } catch (error) {
+          content.innerHTML = `<div class="empty">Failed to load tool metadata. ${escapeHtml(
+            error instanceof Error ? error.message : String(error),
+          )}</div>`;
+          footerText.textContent = "Tool metadata load failed.";
+        }
+      }
+
+      searchInput.addEventListener("input", render);
+      loadCatalog();
+    </script>
+  </body>
+</html>

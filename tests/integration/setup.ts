@@ -62,12 +62,12 @@ function createContext(): IntegrationContext {
   const projectId = parseProjectId(process.env.ALLURE_PROJECT_ID as string);
 
   const tokenManager = new TokenManager({ baseUrl, apiToken });
-  const client = new AllureApiClient({ baseUrl, tokenManager });
+  const client = new AllureApiClient({ baseUrl, tokenManager, defaultProjectId: projectId });
 
-  const testCases = createTestCaseTools(client, projectId);
-  const launches = createLaunchTools(client, projectId);
-  const testResults = createTestResultTools(client, projectId);
-  const testPlans = createTestPlanTools(client, projectId);
+  const testCases = createTestCaseTools(client);
+  const launches = createLaunchTools(client);
+  const testResults = createTestResultTools(client);
+  const testPlans = createTestPlanTools(client);
 
   const handlers = getHandlers([
     testCases.handlers,

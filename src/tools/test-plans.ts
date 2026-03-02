@@ -13,7 +13,6 @@ import {
 
 export function createTestPlanTools(
   client: AllureApiClient,
-  defaultProjectId?: number,
 ): ToolBundle {
   const tools = [
     {
@@ -91,7 +90,7 @@ export function createTestPlanTools(
   const handlers = {
     list_test_plans: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const projectId = await resolveProjectId(args, client, defaultProjectId);
+      const projectId = await resolveProjectId(args, client);
       return api.listTestPlans(client, projectId, {
         search: getOptionalString(args, "search"),
         ...pickPagination(args),
@@ -103,10 +102,7 @@ export function createTestPlanTools(
     },
     create_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      const payload = ensureProjectIdInPayload(
-        getObjectPayload(args),
-        defaultProjectId,
-      );
+      const payload = ensureProjectIdInPayload(getObjectPayload(args), client);
       return api.createTestPlan(client, payload);
     },
     update_test_plan: async (rawArgs: unknown) => {

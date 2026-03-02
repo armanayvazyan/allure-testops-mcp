@@ -2,14 +2,16 @@ import { expect, vi } from "vitest";
 import type { ToolBundle, McpToolDefinition } from "../../src/tools/types.js";
 
 type MockClient = {
+  defaultProjectId?: number;
   get: ReturnType<typeof vi.fn>;
   post: ReturnType<typeof vi.fn>;
   patch: ReturnType<typeof vi.fn>;
   delete: ReturnType<typeof vi.fn>;
 };
 
-export function createMockClient(): MockClient {
+export function createMockClient(defaultProjectId?: number): MockClient {
   return {
+    defaultProjectId,
     get: vi.fn(),
     post: vi.fn(),
     patch: vi.fn(),

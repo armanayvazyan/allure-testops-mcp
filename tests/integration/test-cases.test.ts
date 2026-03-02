@@ -16,41 +16,58 @@ const describeIntegration = integrationEnabled ? describe : describe.skip;
 
 function toCustomFieldUpdatePayload(raw: unknown): JsonRecord[] {
   const entries = asArrayContent(raw);
-  return entries
-    .map((item) => {
-      if (!item || typeof item !== "object") {
-        return undefined;
-      }
-      const entry = item as JsonRecord;
-      const customField = entry.customField;
-      if (!customField || typeof customField !== "object") {
-        return undefined;
-      }
-      const customFieldId = pickId(customField);
-      if (!customFieldId) {
-        return undefined;
-      }
-      const values = asArrayContent(entry.values)
-        .map((value) => {
-          if (!value || typeof value !== "object") {
-            return undefined;
-          }
-          const row = value as JsonRecord;
-          const id = typeof row.id === "number" ? row.id : undefined;
-          const name = typeof row.name === "string" ? row.name : undefined;
-          if (id === undefined && name === undefined) {
-            return undefined;
-          }
-          return { ...(id !== undefined ? { id } : {}), ...(name ? { name } : {}) };
-        })
-        .filter((x): x is JsonRecord => x !== undefined);
+  const result: JsonRecord[] = [];
 
-      return {
-        customField: { id: customFieldId },
-        values,
-      };
-    })
-    .filter((x): x is JsonRecord => x !== undefined);
+  entries.forEach((item) => {
+    if (!item || typeof item !== "object") {
+      return;
+    }
+
+    const entry = item as JsonRecord;
+    const customField = entry.customField;
+    if (!customField || typeof customField !== "object") {
+      return;
+    }
+
+    const customFieldId = pickId(customField);
+    if (!customFieldId) {
+      return;
+    }
+
+    const values: JsonRecord[] = [];
+    asArrayContent(entry.values).forEach((value) => {
+      if (!value || typeof value !== "object") {
+        return;
+      }
+      const row = value as JsonRecord;
+      const id = typeof row.id === "number" ? row.id : undefined;
+      const name = typeof row.name === "string" ? row.name : undefined;
+      if (id === undefined && name === undefined) {
+        return;
+      }
+      values.push({ ...(id !== undefined ? { id } : {}), ...(name ? { name } : {}) });
+    });
+
+    result.push({
+      customField: { id: customFieldId },
+      values,
+    });
+  });
+
+  return result;
+}
+
+function hasUrl(value: unknown, url: string): boolean {
+  if (typeof value === "string") {
+    return value === url;
+  }
+  if (Array.isArray(value)) {
+    return value.some((item) => hasUrl(item, url));
+  }
+  if (!value || typeof value !== "object") {
+    return false;
+  }
+  return Object.values(value as JsonRecord).some((field) => hasUrl(field, url));
 }
 
 describeIntegration("test case tools integration", () => {
@@ -149,6 +166,60 @@ describeIntegration("test case tools integration", () => {
       testCaseId: testCaseId as number,
     });
     expect(tags).toBeDefined();
+  });
+
+  it("bulk add/remove test case tags", async () => {
+    const tagName = uniqueName("it-bulk-tag");
+    await callTool("add_test_case_tags_bulk", {
+      projectId,
+      testCaseId: testCaseId as number,
+      tag: { name: tagName },
+    });
+
+    const tags = await callTool("get_test_case_tags", {
+      testCaseId: testCaseId as number,
+    });
+    const tagId = asArrayContent(tags)
+      .map((item) => (item && typeof item === "object" ? (item as JsonRecord) : undefined))
+      .find((item) => item && item.name === tagName);
+
+    expect(tagId).toBeDefined();
+    const resolvedTagId = pickId(tagId);
+    expect(resolvedTagId).toBeTypeOf("number");
+
+    await callTool("remove_test_case_tags_bulk", {
+      projectId,
+      testCaseIds: [testCaseId as number],
+      tagIds: [resolvedTagId as number],
+    });
+
+    const tagsAfterRemove = await callTool("get_test_case_tags", {
+      testCaseId: testCaseId as number,
+    });
+    const stillAssigned = asArrayContent(tagsAfterRemove).some((item) => {
+      if (!item || typeof item !== "object") {
+        return false;
+      }
+      return (item as JsonRecord).name === tagName;
+    });
+    expect(stillAssigned).toBe(false);
+  });
+
+  it("bulk add external links to test case", async () => {
+    const url = `https://example.local/${uniqueName("it-bulk-link")}`;
+    await callTool("add_test_case_external_links_bulk", {
+      projectId,
+      testCaseId: testCaseId as number,
+      link: {
+        url,
+        name: "integration-link",
+        type: "docs",
+      },
+    });
+
+    const updated = await callTool("get_test_case", { id: testCaseId as number });
+    expect(updated).toBeDefined();
+    expect(hasUrl(updated, url)).toBe(true);
   });
 
   it("set_test_case_issues then get_test_case_issues", async () => {

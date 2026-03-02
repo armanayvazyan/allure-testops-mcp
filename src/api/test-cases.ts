@@ -6,6 +6,8 @@ type QueryParams = Record<string, QueryValue | undefined>;
 type JsonRecord = Record<string, unknown>;
 type CustomFieldValueRef = { id?: number; name?: string };
 type CustomFieldBulkAddValue = CustomFieldValueRef & { customField: { id: number } };
+type TestTagRef = { id?: number; name?: string };
+type ExternalLinkRef = { url: string; name?: string; type?: string };
 
 function asRecord(value: unknown): JsonRecord | undefined {
   return value && typeof value === "object" ? (value as JsonRecord) : undefined;
@@ -222,5 +224,53 @@ export function setTestCaseCustomFields(
       inverted: false,
     },
     cfv,
+  });
+}
+
+export function addTagsToTestCases(
+  client: AllureApiClient,
+  projectId: number,
+  testCaseIds: number[],
+  tags: TestTagRef[],
+): Promise<unknown> {
+  return client.post("/api/v2/test-case/bulk/tag/add", {
+    selection: {
+      projectId,
+      testCasesInclude: testCaseIds,
+      inverted: false,
+    },
+    tags,
+  });
+}
+
+export function removeTagsFromTestCases(
+  client: AllureApiClient,
+  projectId: number,
+  testCaseIds: number[],
+  tagIds: number[],
+): Promise<unknown> {
+  return client.post("/api/v2/test-case/bulk/tag/remove", {
+    selection: {
+      projectId,
+      testCasesInclude: testCaseIds,
+      inverted: false,
+    },
+    ids: tagIds,
+  });
+}
+
+export function addExternalLinksToTestCases(
+  client: AllureApiClient,
+  projectId: number,
+  testCaseIds: number[],
+  links: ExternalLinkRef[],
+): Promise<unknown> {
+  return client.post("/api/v2/test-case/bulk/external-link/add", {
+    selection: {
+      projectId,
+      testCasesInclude: testCaseIds,
+      inverted: false,
+    },
+    links,
   });
 }

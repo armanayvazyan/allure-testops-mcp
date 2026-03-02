@@ -5,7 +5,7 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
 import { TokenManager } from "./auth.js";
 import { AllureApiClient } from "./client.js";
-import { buildToolRegistry, parseOptionalProjectId, requiredEnv } from "./server-bootstrap.js";
+import { buildToolRegistry, requiredEnv } from "./server-bootstrap.js";
 
 function formatToolResult(result: unknown): string {
   if (result === undefined) {
@@ -17,14 +17,25 @@ function formatToolResult(result: unknown): string {
   return JSON.stringify(result, null, 2);
 }
 
+function parseOptionalProjectId(value: string | undefined): number | undefined {
+  if (!value) {
+    return undefined;
+  }
+  const parsed = Number(value);
+  if (Number.isNaN(parsed)) {
+    throw new Error("ALLURE_PROJECT_ID must be a number when provided.");
+  }
+  return parsed;
+}
+
 async function main(): Promise<void> {
   const baseUrl = requiredEnv("ALLURE_TESTOPS_URL");
   const apiToken = requiredEnv("ALLURE_TOKEN");
   const defaultProjectId = parseOptionalProjectId(process.env.ALLURE_PROJECT_ID);
 
   const tokenManager = new TokenManager({ baseUrl, apiToken });
-  const client = new AllureApiClient({ baseUrl, tokenManager });
-  const { tools, handlers } = buildToolRegistry(client, defaultProjectId);
+  const client = new AllureApiClient({ baseUrl, tokenManager, defaultProjectId });
+  const { tools, handlers } = buildToolRegistry(client);
 
   const server = new Server(
     { name: "allure-testops-mcp", version: "1.0.0" },
