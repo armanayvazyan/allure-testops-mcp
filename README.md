@@ -17,9 +17,22 @@ Production-ready MCP server for Allure TestOps focused on test cases, launches, 
 - Test results: list, search, get, create, update, history, assign, resolve
 - Test plans: list, get, create, update, delete, run
 
-## Usage Examples
+## User Usage Docs
 
-See the [examples/](./examples/) folder for prompt-based use case guides covering test cases, launches, test results, test plans, custom fields, and end-to-end workflows.
+User-focused runtime and integration docs are in [`docs/usages/`](./docs/usages/):
+
+- [`docs/usages/README.md`](./docs/usages/README.md)
+- [`docs/usages/docker.md`](./docs/usages/docker.md)
+- [`docs/usages/npx.md`](./docs/usages/npx.md)
+- [`docs/usages/running-locally.md`](./docs/usages/running-locally.md)
+- [`docs/usages/integrations.md`](./docs/usages/integrations.md)
+- [`docs/usages/examples/README.md`](./docs/usages/examples/README.md)
+- [`docs/usages/examples/test-cases.md`](./docs/usages/examples/test-cases.md)
+- [`docs/usages/examples/launches.md`](./docs/usages/examples/launches.md)
+- [`docs/usages/examples/test-results.md`](./docs/usages/examples/test-results.md)
+- [`docs/usages/examples/test-plans.md`](./docs/usages/examples/test-plans.md)
+- [`docs/usages/examples/custom-fields.md`](./docs/usages/examples/custom-fields.md)
+- [`docs/usages/examples/workflows.md`](./docs/usages/examples/workflows.md)
 
 ## Authentication
 

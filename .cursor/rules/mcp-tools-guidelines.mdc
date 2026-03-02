@@ -1,0 +1,18 @@
+---
+description: Conventions for MCP tool implementation under src/tools
+globs: src/tools/**/*.ts
+alwaysApply: false
+---
+
+# MCP Tool Guidelines
+
+- Keep tool schema descriptions precise and user-focused; update docs/examples when behavior changes.
+- Maintain backward compatibility for tool parameters unless a breaking change is explicitly requested.
+- Validate required project context (`projectId` or `projectName`) consistently with existing tool patterns.
+- Return actionable, structured errors; avoid vague failure messages.
+- Prefer shared API/auth helpers instead of duplicating request logic in each tool file.
+
+## Verification
+
+- For tool behavior changes, run relevant integration tests in `tests/integration`.
+- Confirm no regressions in tool registration and names.
