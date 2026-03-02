@@ -65,9 +65,13 @@ cd allure-testops-mcp
 
 2) Install dependencies:
 
-```bash
-npm install
-```
+This server follows the Allure TestOps API guide:
+
+1. Use your user-generated API token in `ALLURE_TOKEN`.
+2. Server exchanges it at `/api/uaa/oauth/token`.
+3. Received bearer JWT is cached and reused until near expiry.
+
+Reference: https://docs.qameta.io/allure-testops/advanced/api/
 
 3) Create your local environment file from the example and fill required values:
 
@@ -114,7 +118,6 @@ Use one of these server commands:
 - `npx`:
   - `command`: `npx`
   - `args`: `["-y", "allure-testops-mcp"]`
-
 Common config block:
 
 ```json
