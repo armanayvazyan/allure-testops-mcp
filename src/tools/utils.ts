@@ -145,6 +145,19 @@ export function getObjectPayload(
   return payload as Record<string, unknown>;
 }
 
+export function ensureProjectIdInPayload(
+  payload: Record<string, unknown>,
+  defaultProjectId: number | undefined,
+): Record<string, unknown> {
+  if (payload.projectId !== undefined) {
+    return payload;
+  }
+  if (defaultProjectId !== undefined) {
+    return { ...payload, projectId: defaultProjectId };
+  }
+  return payload;
+}
+
 export function getOptionalObjectPayload(
   args: ToolArgs,
   key = "payload",

@@ -2,6 +2,7 @@ import { AllureApiClient } from "../client.js";
 import { ToolBundle } from "./types.js";
 import {
   asObject,
+  ensureProjectIdInPayload,
   getObjectPayload,
   getOptionalNumber,
   getOptionalString,
@@ -65,7 +66,8 @@ export function createLaunchTools(
     },
     {
       name: "create_launch",
-      description: "Create a new launch.",
+      description:
+        "Create a new launch. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted.",
       inputSchema: {
         type: "object" as const,
         properties: { payload: { type: "object", additionalProperties: true } },
@@ -181,7 +183,11 @@ export function createLaunchTools(
     },
     create_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post("/api/launch", getObjectPayload(args));
+      const payload = ensureProjectIdInPayload(
+        getObjectPayload(args),
+        defaultProjectId,
+      );
+      return client.post("/api/launch", payload);
     },
     update_launch: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);

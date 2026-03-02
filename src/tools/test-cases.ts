@@ -2,6 +2,7 @@ import { AllureApiClient } from "../client.js";
 import { ToolBundle } from "./types.js";
 import {
   asObject,
+  ensureProjectIdInPayload,
   getOptionalBoolean,
   getObjectPayload,
   getOptionalNumber,
@@ -67,7 +68,7 @@ export function createTestCaseTools(
     {
       name: "create_test_case",
       description:
-        "Create a new test case. payload.customFields supports values like { customField: { id }, id, name }.",
+        "Create a new test case. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted. payload.customFields supports values like { customField: { id }, id, name }.",
       inputSchema: {
         type: "object" as const,
         properties: {
@@ -277,7 +278,11 @@ export function createTestCaseTools(
     },
     create_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post("/api/testcase", getObjectPayload(args));
+      const payload = ensureProjectIdInPayload(
+        getObjectPayload(args),
+        defaultProjectId,
+      );
+      return client.post("/api/testcase", payload);
     },
     update_test_case: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);

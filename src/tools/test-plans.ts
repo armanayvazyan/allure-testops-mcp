@@ -2,6 +2,7 @@ import { AllureApiClient } from "../client.js";
 import { ToolBundle } from "./types.js";
 import {
   asObject,
+  ensureProjectIdInPayload,
   getObjectPayload,
   getOptionalString,
   getRequiredId,
@@ -43,7 +44,8 @@ export function createTestPlanTools(
     },
     {
       name: "create_test_plan",
-      description: "Create a new test plan.",
+      description:
+        "Create a new test plan. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted.",
       inputSchema: {
         type: "object" as const,
         properties: { payload: { type: "object", additionalProperties: true } },
@@ -101,7 +103,11 @@ export function createTestPlanTools(
     },
     create_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
-      return client.post("/api/testplan", getObjectPayload(args));
+      const payload = ensureProjectIdInPayload(
+        getObjectPayload(args),
+        defaultProjectId,
+      );
+      return client.post("/api/testplan", payload);
     },
     update_test_plan: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
