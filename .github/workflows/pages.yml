@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - master
   workflow_dispatch:
 
 permissions:
@@ -37,6 +36,9 @@ jobs:
 
       - name: Generate tool catalog
         run: npm run docs:generate
+
+      - name: Verify tool catalog exists
+        run: test -f docs/tools.json
 
       - name: Configure Pages
         uses: actions/configure-pages@v5

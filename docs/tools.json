@@ -1,0 +1,1070 @@
+{
+  "generatedAt": "2026-03-02T23:51:53.187Z",
+  "totalTools": 47,
+  "categories": [
+    {
+      "name": "Test Cases",
+      "tools": [
+        {
+          "name": "list_test_cases",
+          "description": "List test cases for a project.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "search": {
+                "type": "string"
+              },
+              "filterId": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "search_test_cases",
+          "description": "Search test cases by AQL query.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "rql": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "rql"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case",
+          "description": "Get a test case by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "create_test_case",
+          "description": "Create a new test case. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted. payload.customFields supports values like { customField: { id }, id, name }.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "update_test_case",
+          "description": "Update an existing test case. payload.customFields supports values like { customField: { id }, id, name }.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "delete_test_case",
+          "description": "Delete a test case by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "add_test_case_tags_bulk",
+          "description": "Add one or multiple tags to one or multiple test cases using bulk API.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "testCaseId": {
+                "type": "number"
+              },
+              "testCaseIds": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "tag": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "tags": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "remove_test_case_tags_bulk",
+          "description": "Remove one or multiple tags from one or multiple test cases using bulk API.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "testCaseId": {
+                "type": "number"
+              },
+              "testCaseIds": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "tagId": {
+                "type": "number"
+              },
+              "tagIds": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "add_test_case_external_links_bulk",
+          "description": "Add one or multiple external links to one or multiple test cases using bulk API.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "testCaseId": {
+                "type": "number"
+              },
+              "testCaseIds": {
+                "type": "array",
+                "items": {
+                  "type": "number"
+                }
+              },
+              "link": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "links": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "get_test_case_overview",
+          "description": "Get test case overview data.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "testCaseId"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case_history",
+          "description": "Get test case run history.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case_scenario",
+          "description": "Get scenario for a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case_tags",
+          "description": "Get tags assigned to a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "testCaseId"
+            ]
+          }
+        },
+        {
+          "name": "set_test_case_tags",
+          "description": "Set tags for a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "testCaseId",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case_issues",
+          "description": "Get linked issues for a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "testCaseId"
+            ]
+          }
+        },
+        {
+          "name": "set_test_case_issues",
+          "description": "Set linked issues for a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "testCaseId",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "restore_test_case",
+          "description": "Restore a deleted test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "list_project_custom_fields",
+          "description": "List custom fields configured for a project.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "query": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "list_custom_field_values",
+          "description": "List values for a custom field in a project.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "customFieldId": {
+                "type": "number"
+              },
+              "query": {
+                "type": "string"
+              },
+              "global": {
+                "type": "boolean"
+              },
+              "testCaseSearch": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "customFieldId"
+            ]
+          }
+        },
+        {
+          "name": "get_test_case_custom_fields",
+          "description": "Get custom field values for a test case.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              },
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              }
+            },
+            "required": [
+              "testCaseId"
+            ]
+          }
+        },
+        {
+          "name": "set_test_case_custom_fields",
+          "description": "Add custom field values for a test case via bulk API. Supports grouped values [{ customField: { id }, values: [{ id|name }] }] and flat values [{ id|name, customField: { id } }].",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "testCaseId": {
+                "type": "number"
+              },
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "payload": {
+                "type": "array",
+                "items": {
+                  "type": "object"
+                }
+              }
+            },
+            "required": [
+              "testCaseId",
+              "payload"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Launches",
+      "tools": [
+        {
+          "name": "list_launches",
+          "description": "List launches for a project.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "search": {
+                "type": "string"
+              },
+              "filterId": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "search_launches",
+          "description": "Search launches by AQL query.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "rql": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "rql"
+            ]
+          }
+        },
+        {
+          "name": "get_launch",
+          "description": "Get a launch by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "create_launch",
+          "description": "Create a new launch. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "update_launch",
+          "description": "Update an existing launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "delete_launch",
+          "description": "Delete a launch by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "close_launch",
+          "description": "Close an open launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "reopen_launch",
+          "description": "Reopen a closed launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "get_launch_statistic",
+          "description": "Get launch statistics.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "get_launch_progress",
+          "description": "Get launch progress widget data.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "add_test_cases_to_launch",
+          "description": "Add test cases to a launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "add_test_plan_to_launch",
+          "description": "Add a test plan to a launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Results",
+      "tools": [
+        {
+          "name": "list_test_results",
+          "description": "List test results for a launch.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "launchId": {
+                "type": "number"
+              },
+              "search": {
+                "type": "string"
+              },
+              "filterId": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "launchId"
+            ]
+          }
+        },
+        {
+          "name": "search_test_results",
+          "description": "Search test results by AQL query.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "rql": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "rql"
+            ]
+          }
+        },
+        {
+          "name": "get_test_result",
+          "description": "Get a test result by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "create_test_result",
+          "description": "Create a new test result.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "update_test_result",
+          "description": "Update an existing test result.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "get_test_result_history",
+          "description": "Get history for a test result.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "assign_test_result",
+          "description": "Assign a test result. payload must include username.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "resolve_test_result",
+          "description": "Resolve a test result. payload must include status.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Test Plans",
+      "tools": [
+        {
+          "name": "list_test_plans",
+          "description": "List test plans for a project.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "projectId": {
+                "type": "number"
+              },
+              "projectName": {
+                "type": "string",
+                "description": "Project name (alternative to projectId)."
+              },
+              "search": {
+                "type": "string"
+              },
+              "page": {
+                "type": "number"
+              },
+              "size": {
+                "type": "number"
+              },
+              "sort": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "get_test_plan",
+          "description": "Get a test plan by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "create_test_plan",
+          "description": "Create a new test plan. payload.projectId defaults to ALLURE_PROJECT_ID env when omitted.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "update_test_plan",
+          "description": "Update an existing test plan.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id",
+              "payload"
+            ]
+          }
+        },
+        {
+          "name": "delete_test_plan",
+          "description": "Delete a test plan by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        },
+        {
+          "name": "run_test_plan",
+          "description": "Run a test plan by ID.",
+          "inputSchema": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "number"
+              },
+              "payload": {
+                "type": "object",
+                "additionalProperties": true
+              }
+            },
+            "required": [
+              "id"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
