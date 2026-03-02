@@ -47,7 +47,7 @@ Reference: https://docs.qameta.io/allure-testops/advanced/api/
 ## Environment Variables
 
 ```bash
-ALLURE_TESTOPS_URL=https://allure-testops.labs.jb.gg/
+ALLURE_TESTOPS_URL=https://allure-testops.instance.com/
 ALLURE_TOKEN=your-api-token
 # Optional default project:
 # ALLURE_PROJECT_ID=37
@@ -140,7 +140,7 @@ Common config block:
       "command": "npx",
       "args": ["-y", "allure-testops-mcp"],
       "env": {
-        "ALLURE_TESTOPS_URL": "https://allure-testops.labs.jb.gg/",
+        "ALLURE_TESTOPS_URL": "https://allure-testops.instance.com",
         "ALLURE_TOKEN": "your-api-token",
         "ALLURE_PROJECT_ID": "37"
       }
@@ -202,7 +202,7 @@ Included automation for typical open-source maintenance:
 ## Temporary Smoke Test
 
 ```bash
-ALLURE_TESTOPS_URL="https://allure-testops.labs.jb.gg/" \
+ALLURE_TESTOPS_URL="https://allure-testops.instance.com/" \
 ALLURE_TOKEN="your-api-token" \
 ALLURE_PROJECT_ID="37" \
 npm run temp:test
