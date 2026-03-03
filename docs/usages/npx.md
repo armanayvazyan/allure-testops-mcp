@@ -1,6 +1,6 @@
 # Usage via NPX
 
-Use this option when you want zero local build setup and prefer launching the server directly from npm.
+Use this option when you want zero local build setup and prefer launching the server directly with `npx`.
 
 ## Required Environment Variables
 
@@ -12,6 +12,22 @@ ALLURE_TOKEN=your-api-token
 ```
 
 ## MCP Server Command
+
+Preferred for direct GitHub source execution:
+
+```json
+{
+  "command": "npx",
+  "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
+  "env": {
+    "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
+    "ALLURE_TOKEN": "your-api-token",
+    "ALLURE_PROJECT_ID": "37"
+  }
+}
+```
+
+Alternative (when the package is published to npm):
 
 ```json
 {

@@ -21,7 +21,7 @@ Use this `mcpServers` entry in Cursor MCP settings:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -41,7 +41,7 @@ Use the same `mcpServers` structure in Claude Code MCP config:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -61,7 +61,7 @@ Add this to `claude_desktop_config.json`:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",

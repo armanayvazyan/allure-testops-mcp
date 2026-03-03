@@ -21,7 +21,7 @@ Run smoke test:
 ALLURE_TESTOPS_URL="https://allure-testops.instance.com/" \
 ALLURE_TOKEN="your-api-token" \
 ALLURE_PROJECT_ID="37" \
-npm run temp:test
+npm run test:integration
 ```
 
 ## Pull Request Guidelines
@@ -31,7 +31,7 @@ npm run temp:test
 - Update docs if behavior, API, or setup changed.
 - Ensure `npm run build` passes.
 - Ensure `npm run lint` passes.
-- If touching API behavior, run `npm run temp:test` where possible.
+- If touching API behavior, run `npm run test:integration` where possible.
 - CI must be green before merge.
 
 ## Local Validation Checklist
@@ -46,7 +46,7 @@ npm run lint
 Optional API smoke verification:
 
 ```bash
-npm run temp:test
+npm run test:integration
 ```
 
 ## Branch Protection (Maintainers)
