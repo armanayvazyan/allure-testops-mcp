@@ -139,9 +139,7 @@ Use one of these server commands:
 - `npx` (GitHub spec):
   - `command`: `npx`
   - `args`: `["-y", "github:armanayvazyan/allure-testops-mcp"]`
-- `npx` (npm package, when published):
-  - `command`: `npx`
-  - `args`: `["-y", "allure-testops-mcp"]`
+
 Common config block:
 
 ```json
