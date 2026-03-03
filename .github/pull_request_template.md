@@ -9,7 +9,7 @@ Describe the purpose of this PR.
 ## Validation
 
 - [ ] `npm run build`
-- [ ] `npm run temp:test` (if API behavior changed)
+- [ ] `npm run test:integration` (if API behavior changed)
 - [ ] Documentation updated (if needed)
 
 ## Checklist

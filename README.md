@@ -123,10 +123,10 @@ npm start
 npm run dev
 ```
 
-7) Optional: run temporary smoke test against your TestOps instance:
+7) Optional: run integration smoke checks:
 
 ```bash
-npm run temp:test
+npm run test:integration
 ```
 
 ## MCP Client Setup
@@ -136,7 +136,10 @@ Use one of these server commands:
 - Local build:
   - `command`: `node`
   - `args`: `["/absolute/path/to/allure-testops-mcp/dist/index.js"]`
-- `npx`:
+- `npx` (GitHub spec):
+  - `command`: `npx`
+  - `args`: `["-y", "github:armanayvazyan/allure-testops-mcp"]`
+- `npx` (npm package, when published):
   - `command`: `npx`
   - `args`: `["-y", "allure-testops-mcp"]`
 Common config block:
@@ -146,7 +149,7 @@ Common config block:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://allure-testops.instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -207,13 +210,13 @@ Included automation for typical open-source maintenance:
 - Stale issue/PR triage: [`.github/workflows/stale.yml`](.github/workflows/stale.yml)
 - Release notes drafting: [`.github/workflows/release-drafter.yml`](.github/workflows/release-drafter.yml)
 
-## Temporary Smoke Test
+## Integration Smoke Test
 
 ```bash
 ALLURE_TESTOPS_URL="https://allure-testops.instance.com/" \
 ALLURE_TOKEN="your-api-token" \
 ALLURE_PROJECT_ID="37" \
-npm run temp:test
+npm run test:integration
 ```
 
 ## Public Project Docs
