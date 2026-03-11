@@ -22,6 +22,7 @@ vi.mock("../../../src/api/test-cases.js", () => ({
   getTestCaseOverview: vi.fn(),
   getTestCaseHistory: vi.fn(),
   getTestCaseScenario: vi.fn(),
+  getTestCaseSteps: vi.fn(),
   getTestCaseTags: vi.fn(),
   setTestCaseTags: vi.fn(),
   getTestCaseIssues: vi.fn(),
