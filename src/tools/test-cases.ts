@@ -313,6 +313,15 @@ export function createTestCaseTools(
       },
     },
     {
+      name: "get_test_case_steps",
+      description: "Get manual scenario steps for a test case. Returns a normalized scenario with root step and a flat map of all steps (scenarioSteps), where each step contains body, expectedResult, children IDs, and optional sharedStepId.",
+      inputSchema: {
+        type: "object" as const,
+        properties: { id: { type: "number" } },
+        required: ["id"],
+      },
+    },
+    {
       name: "get_test_case_tags",
       description: "Get tags assigned to a test case.",
       inputSchema: {
@@ -505,6 +514,10 @@ export function createTestCaseTools(
     get_test_case_scenario: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
       return api.getTestCaseScenario(client, getRequiredId(args));
+    },
+    get_test_case_steps: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      return api.getTestCaseSteps(client, getRequiredId(args));
     },
     get_test_case_tags: async (rawArgs: unknown) => {
       const args = asObject(rawArgs);
