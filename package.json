@@ -1,6 +1,6 @@
 {
   "name": "allure-testops-mcp",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "MCP server for Allure TestOps test cases and launches",
   "type": "module",
   "main": "dist/index.js",
