@@ -274,3 +274,51 @@ export function addExternalLinksToTestCases(
     links,
   });
 }
+
+export function removeCustomFieldsFromTestCases(
+  client: AllureApiClient,
+  projectId: number,
+  testCaseIds: number[],
+  customFieldIds: number[],
+): Promise<unknown> {
+  return client.post("/api/v2/test-case/bulk/cfv/remove", {
+    selection: {
+      projectId,
+      testCasesInclude: testCaseIds,
+      inverted: false,
+    },
+    ids: customFieldIds,
+  });
+}
+
+export function bulkSetTestCaseCustomFields(
+  client: AllureApiClient,
+  projectId: number,
+  testCaseIds: number[],
+  payload: unknown,
+): Promise<unknown> {
+  const cfv = normalizeCustomFieldBulkAddPayload(payload);
+  return client.post("/api/v2/test-case/bulk/cfv/add", {
+    selection: {
+      projectId,
+      testCasesInclude: testCaseIds,
+      inverted: false,
+    },
+    cfv,
+  });
+}
+
+export function deleteCustomFieldValue(
+  client: AllureApiClient,
+  valueId: number,
+): Promise<unknown> {
+  return client.delete(`/api/cfv/${valueId}`);
+}
+
+export function renameCustomFieldValue(
+  client: AllureApiClient,
+  valueId: number,
+  newName: string,
+): Promise<unknown> {
+  return client.patch(`/api/cfv/${valueId}`, { name: newName });
+}
