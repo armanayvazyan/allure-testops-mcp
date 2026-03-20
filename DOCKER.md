@@ -126,7 +126,7 @@ services:
     image: YOUR_DOCKERHUB_USERNAME/allure-testops-mcp:latest
     container_name: allure-testops-mcp
     environment:
-      - ALLURE_TESTOPS_URL=${ALLURE_TESTOPS_URL:-https://allure-testops.labs.jb.gg}
+      - ALLURE_TESTOPS_URL=${ALLURE_TESTOPS_URL:-https://allure-testops.instance.com}
       - ALLURE_TOKEN=${ALLURE_TOKEN}
       - PROJECT_ID=${PROJECT_ID}
     restart: unless-stopped

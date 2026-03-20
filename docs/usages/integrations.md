@@ -78,3 +78,4 @@ If you prefer other runtimes, replace only `command` and `args`:
 
 - Docker: see [docker.md](./docker.md)
 - Local build (`node dist/index.js`): see [running-locally.md](./running-locally.md)
+- npm registry package (when published): use `allure-testops-mcp@1.0.0`
