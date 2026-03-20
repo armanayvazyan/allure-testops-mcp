@@ -31,6 +31,10 @@ vi.mock("../../../src/api/test-cases.js", () => ({
   listCustomFieldValues: vi.fn(),
   getTestCaseCustomFields: vi.fn(),
   setTestCaseCustomFields: vi.fn(),
+  removeCustomFieldsFromTestCases: vi.fn(),
+  bulkSetTestCaseCustomFields: vi.fn(),
+  deleteCustomFieldValue: vi.fn(),
+  renameCustomFieldValue: vi.fn(),
 }));
 
 describe("createTestCaseTools", () => {
@@ -259,5 +263,190 @@ describe("createTestCaseTools", () => {
     });
     expect(api.getTestCaseCustomFields).toHaveBeenCalledWith(client, 9, defaultProjectId);
     expect(api.setTestCaseCustomFields).toHaveBeenCalledWith(client, defaultProjectId, 9, []);
+  });
+
+  it("remove_test_case_custom_fields calls bulk cfv/remove API", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.removeCustomFieldsFromTestCases).mockResolvedValueOnce({});
+
+    await bundle.handlers.remove_test_case_custom_fields({
+      testCaseId: 100,
+      customFieldId: -2,
+    });
+
+    expect(api.removeCustomFieldsFromTestCases).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [100],
+      [-2],
+    );
+  });
+
+  it("remove_test_case_custom_fields validates required ids", async () => {
+    const bundle = createTestCaseTools(client as never);
+
+    await expect(
+      bundle.handlers.remove_test_case_custom_fields({ customFieldId: -2 }),
+    ).rejects.toThrow('Either "testCaseId" or "testCaseIds" must be provided');
+
+    await expect(
+      bundle.handlers.remove_test_case_custom_fields({ testCaseId: 100 }),
+    ).rejects.toThrow('Either "customFieldId" or "customFieldIds" must be provided');
+  });
+
+  it("bulk_set_test_case_custom_fields in replace mode removes then adds", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.removeCustomFieldsFromTestCases).mockResolvedValueOnce({});
+    vi.mocked(api.bulkSetTestCaseCustomFields).mockResolvedValueOnce({});
+
+    await bundle.handlers.bulk_set_test_case_custom_fields({
+      testCaseIds: [10, 20],
+      payload: [{ customField: { id: -2 }, values: [{ name: "Insights" }] }],
+    });
+
+    expect(api.removeCustomFieldsFromTestCases).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [10, 20],
+      [-2],
+    );
+    expect(api.bulkSetTestCaseCustomFields).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [10, 20],
+      [{ customField: { id: -2 }, values: [{ name: "Insights" }] }],
+    );
+  });
+
+  it("bulk_set_test_case_custom_fields in add mode skips remove", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.bulkSetTestCaseCustomFields).mockResolvedValueOnce({});
+
+    await bundle.handlers.bulk_set_test_case_custom_fields({
+      testCaseId: 10,
+      mode: "add",
+      payload: [{ customField: { id: -2 }, values: [{ name: "Insights" }] }],
+    });
+
+    expect(api.removeCustomFieldsFromTestCases).not.toHaveBeenCalled();
+    expect(api.bulkSetTestCaseCustomFields).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [10],
+      [{ customField: { id: -2 }, values: [{ name: "Insights" }] }],
+    );
+  });
+
+  it("delete_custom_field_value calls API with valueId", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.deleteCustomFieldValue).mockResolvedValueOnce({});
+
+    await bundle.handlers.delete_custom_field_value({ valueId: 1234 });
+
+    expect(api.deleteCustomFieldValue).toHaveBeenCalledWith(client, 1234);
+  });
+
+  it("rename_custom_field_value calls API with valueId and name", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.renameCustomFieldValue).mockResolvedValueOnce({});
+
+    await bundle.handlers.rename_custom_field_value({ valueId: 1234, name: "New Name" });
+
+    expect(api.renameCustomFieldValue).toHaveBeenCalledWith(client, 1234, "New Name");
+  });
+
+  it("merge_custom_field_values reassigns test cases and deletes source", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.searchTestCases).mockResolvedValueOnce({
+      content: [{ id: 100 }, { id: 200 }],
+    });
+    vi.mocked(api.removeCustomFieldsFromTestCases).mockResolvedValueOnce({});
+    vi.mocked(api.bulkSetTestCaseCustomFields).mockResolvedValueOnce({});
+    vi.mocked(api.deleteCustomFieldValue).mockResolvedValueOnce({});
+
+    const result = await bundle.handlers.merge_custom_field_values({
+      customFieldId: -2,
+      sourceValueId: 10,
+      targetValueId: 20,
+    });
+
+    expect(api.searchTestCases).toHaveBeenCalled();
+    expect(api.removeCustomFieldsFromTestCases).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [100, 200],
+      [-2],
+    );
+    expect(api.bulkSetTestCaseCustomFields).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      [100, 200],
+      [{ customField: { id: -2 }, values: [{ id: 20 }] }],
+    );
+    expect(api.deleteCustomFieldValue).toHaveBeenCalledWith(client, 10);
+    expect(result).toEqual({
+      merged: true,
+      testCasesReassigned: 2,
+      sourceValueId: 10,
+      targetValueId: 20,
+      sourceDeleted: true,
+    });
+  });
+
+  it("search_test_cases_by_missing_field builds RQL query", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.searchTestCases).mockResolvedValueOnce({ content: [] });
+
+    await bundle.handlers.search_test_cases_by_missing_field({
+      fieldName: "Feature",
+      page: 0,
+      size: 50,
+    });
+
+    expect(api.searchTestCases).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      'cf["Feature"] is empty',
+      { page: 0, size: 50, sort: undefined },
+    );
+  });
+
+  it("search_test_cases_by_missing_field combines with additional RQL", async () => {
+    const bundle = createTestCaseTools(client as never);
+    vi.mocked(api.searchTestCases).mockResolvedValueOnce({ content: [] });
+
+    await bundle.handlers.search_test_cases_by_missing_field({
+      fieldName: "Feature",
+      additionalRql: 'cf["Suite"] = "API"',
+    });
+
+    expect(api.searchTestCases).toHaveBeenCalledWith(
+      client,
+      defaultProjectId,
+      'cf["Feature"] is empty and cf["Suite"] = "API"',
+      { page: undefined, size: undefined, sort: undefined },
+    );
+  });
+
+  it("new tools are included in schema and handler parity check", () => {
+    const bundle = createTestCaseTools(client as never);
+    const toolNames = bundle.tools.map((t) => t.name);
+
+    expect(toolNames).toContain("remove_test_case_custom_fields");
+    expect(toolNames).toContain("bulk_set_test_case_custom_fields");
+    expect(toolNames).toContain("delete_custom_field_value");
+    expect(toolNames).toContain("rename_custom_field_value");
+    expect(toolNames).toContain("merge_custom_field_values");
+    expect(toolNames).toContain("search_test_cases_by_missing_field");
+
+    expectRequiredFields(bundle.tools, "delete_custom_field_value", ["valueId"]);
+    expectRequiredFields(bundle.tools, "rename_custom_field_value", ["valueId", "name"]);
+    expectRequiredFields(bundle.tools, "bulk_set_test_case_custom_fields", ["payload"]);
+    expectRequiredFields(bundle.tools, "merge_custom_field_values", [
+      "customFieldId",
+      "sourceValueId",
+      "targetValueId",
+    ]);
+    expectRequiredFields(bundle.tools, "search_test_cases_by_missing_field", ["fieldName"]);
   });
 });

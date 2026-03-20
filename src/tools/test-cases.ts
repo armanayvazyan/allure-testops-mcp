@@ -9,6 +9,7 @@ import {
   getOptionalNumber,
   getOptionalString,
   getRequiredId,
+  getRequiredNumber,
   getRequiredString,
   pickPagination,
   resolveProjectId,
@@ -96,6 +97,26 @@ function normalizeBulkTags(args: ToolObject): BulkTag[] {
   });
 }
 
+function extractCustomFieldIds(payload: unknown): number[] {
+  if (!Array.isArray(payload)) {
+    return [];
+  }
+  const ids = new Set<number>();
+  for (const entry of payload) {
+    if (entry && typeof entry === "object" && !Array.isArray(entry)) {
+      const row = entry as ToolObject;
+      const cf = row.customField;
+      if (cf && typeof cf === "object" && !Array.isArray(cf)) {
+        const id = (cf as ToolObject).id;
+        if (typeof id === "number" && !Number.isNaN(id)) {
+          ids.add(id);
+        }
+      }
+    }
+  }
+  return [...ids];
+}
+
 function normalizeBulkExternalLinks(args: ToolObject): BulkExternalLink[] {
   const items: unknown[] = [];
   if (args.link !== undefined) {
@@ -163,7 +184,16 @@ export function createTestCaseTools(
     },
     {
       name: "search_test_cases",
-      description: "Search test cases by AQL query.",
+      description:
+        "Search test cases by RQL query. " +
+        "RQL examples: " +
+        'cf["Feature"] = "Auth" — match custom field value; ' +
+        'cf["Feature"] is empty — field not set; ' +
+        'not cf["Feature"] = "Auth" — negation; ' +
+        'cf["Suite"] = "API" and cf["Feature"] is empty — combined conditions; ' +
+        "name ~ \"login\" — name contains substring; " +
+        "tag = \"smoke\" — filter by tag. " +
+        "Use page/size for pagination; the API may truncate large result sets.",
       inputSchema: {
         type: "object" as const,
         properties: {
@@ -172,9 +202,15 @@ export function createTestCaseTools(
             type: "string",
             description: "Project name (alternative to projectId).",
           },
-          rql: { type: "string" },
-          page: { type: "number" },
-          size: { type: "number" },
+          rql: {
+            type: "string",
+            description:
+              "RQL query string. Operators: = (equals), ~ (contains), is empty (field not set), " +
+              "not (negation), and/or (combinators). " +
+              'Custom field syntax: cf["FieldName"]. Example: cf["Feature"] = "Auth"',
+          },
+          page: { type: "number", description: "Page number (0-based)." },
+          size: { type: "number", description: "Page size (default varies by server)." },
           sort: { type: "array", items: { type: "string" } },
         },
         required: ["rql"],
@@ -204,7 +240,11 @@ export function createTestCaseTools(
     {
       name: "update_test_case",
       description:
-        "Update an existing test case. payload.customFields supports values like { customField: { id }, id, name }.",
+        "Update an existing test case. " +
+        "WARNING: payload.customFields REPLACES all custom fields — any field not included will be removed. " +
+        "To update a single custom field safely, use set_test_case_custom_fields or " +
+        "bulk_set_test_case_custom_fields instead. " +
+        "payload.customFields supports values like { customField: { id }, id, name }.",
       inputSchema: {
         type: "object" as const,
         properties: {
@@ -422,7 +462,13 @@ export function createTestCaseTools(
     {
       name: "set_test_case_custom_fields",
       description:
-        "Add custom field values for a test case via bulk API. Supports grouped values [{ customField: { id }, values: [{ id|name }] }] and flat values [{ id|name, customField: { id } }].",
+        "Add custom field values for a test case via bulk API. " +
+        "NOTE: This ADDS values without removing existing ones. For multi-select fields, " +
+        "the test case may end up with both old and new values. " +
+        "To replace values, use remove_test_case_custom_fields first, then this tool. " +
+        "Or use bulk_set_test_case_custom_fields with mode=\"replace\". " +
+        "Supports grouped values [{ customField: { id }, values: [{ id|name }] }] " +
+        "and flat values [{ id|name, customField: { id } }].",
       inputSchema: {
         type: "object" as const,
         properties: {
@@ -435,6 +481,126 @@ export function createTestCaseTools(
           payload: { type: "array", items: { type: "object" } },
         },
         required: ["testCaseId", "payload"],
+      },
+    },
+    {
+      name: "remove_test_case_custom_fields",
+      description:
+        "Remove custom field values from one or multiple test cases via bulk API. " +
+        "Pass the custom field IDs whose values should be cleared from the specified test cases.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          projectId: { type: "number" },
+          projectName: {
+            type: "string",
+            description: "Project name (alternative to projectId).",
+          },
+          testCaseId: { type: "number", description: "Single test case ID." },
+          testCaseIds: { type: "array", items: { type: "number" }, description: "Multiple test case IDs." },
+          customFieldId: { type: "number", description: "Single custom field ID to clear." },
+          customFieldIds: { type: "array", items: { type: "number" }, description: "Multiple custom field IDs to clear." },
+        },
+      },
+    },
+    {
+      name: "bulk_set_test_case_custom_fields",
+      description:
+        "Set custom field values on multiple test cases at once. " +
+        "When mode is \"replace\" (default), existing values for the specified fields are removed " +
+        "before adding new ones, preventing unintended data accumulation. " +
+        "When mode is \"add\", values are added without removing existing ones. " +
+        "Payload format: [{ customField: { id }, values: [{ id|name }] }] or " +
+        "[{ id|name, customField: { id } }].",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          projectId: { type: "number" },
+          projectName: {
+            type: "string",
+            description: "Project name (alternative to projectId).",
+          },
+          testCaseId: { type: "number", description: "Single test case ID." },
+          testCaseIds: { type: "array", items: { type: "number" }, description: "Multiple test case IDs." },
+          mode: {
+            type: "string",
+            enum: ["replace", "add"],
+            description: "\"replace\" (default): removes existing values for the specified fields before adding. \"add\": appends without removing.",
+          },
+          payload: { type: "array", items: { type: "object" } },
+        },
+        required: ["payload"],
+      },
+    },
+    {
+      name: "delete_custom_field_value",
+      description:
+        "Delete a custom field value definition. The value must not be in use by any test cases. " +
+        "Use this to clean up orphaned values after reorganizing test cases.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          valueId: { type: "number", description: "The ID of the custom field value to delete." },
+        },
+        required: ["valueId"],
+      },
+    },
+    {
+      name: "rename_custom_field_value",
+      description:
+        "Rename a custom field value. All test cases using this value will automatically reflect the new name.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          valueId: { type: "number", description: "The ID of the custom field value to rename." },
+          name: { type: "string", description: "The new name for the value." },
+        },
+        required: ["valueId", "name"],
+      },
+    },
+    {
+      name: "merge_custom_field_values",
+      description:
+        "Merge two custom field values: reassign all test cases from the source value to the target value, " +
+        "then delete the source value. Useful for consolidating duplicate or similar values.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          projectId: { type: "number" },
+          projectName: {
+            type: "string",
+            description: "Project name (alternative to projectId).",
+          },
+          customFieldId: { type: "number", description: "The custom field ID (e.g. -2 for Feature)." },
+          sourceValueId: { type: "number", description: "The value to merge FROM (will be deleted)." },
+          targetValueId: { type: "number", description: "The value to merge INTO (will be kept)." },
+        },
+        required: ["customFieldId", "sourceValueId", "targetValueId"],
+      },
+    },
+    {
+      name: "search_test_cases_by_missing_field",
+      description:
+        "Find test cases where a specific custom field is not set. " +
+        "Convenience wrapper that builds the RQL query cf[\"FieldName\"] is empty.",
+      inputSchema: {
+        type: "object" as const,
+        properties: {
+          projectId: { type: "number" },
+          projectName: {
+            type: "string",
+            description: "Project name (alternative to projectId).",
+          },
+          fieldName: { type: "string", description: "The custom field name (e.g. \"Feature\", \"Suite\")." },
+          additionalRql: {
+            type: "string",
+            description: "Optional extra RQL filter to combine with the missing-field condition using AND.",
+          },
+          page: { type: "number", description: "Page number (0-based)." },
+          size: { type: "number", description: "Page size." },
+          sort: { type: "array", items: { type: "string" } },
+        },
+        required: ["fieldName"],
       },
     },
   ];
@@ -559,6 +725,87 @@ export function createTestCaseTools(
       const projectId = await resolveProjectId(args, client);
       const testCaseId = getRequiredId(args, "testCaseId");
       return api.setTestCaseCustomFields(client, projectId, testCaseId, args.payload);
+    },
+    remove_test_case_custom_fields: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      const projectId = await resolveProjectId(args, client);
+      const testCaseIds = getBulkIdList(args, "testCaseId", "testCaseIds", "test case");
+      const customFieldIds = getBulkIdList(args, "customFieldId", "customFieldIds", "custom field");
+      return api.removeCustomFieldsFromTestCases(client, projectId, testCaseIds, customFieldIds);
+    },
+    bulk_set_test_case_custom_fields: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      const projectId = await resolveProjectId(args, client);
+      const testCaseIds = getBulkIdList(args, "testCaseId", "testCaseIds", "test case");
+      const mode = getOptionalString(args, "mode") ?? "replace";
+
+      if (mode === "replace") {
+        const fieldIds = extractCustomFieldIds(args.payload);
+        if (fieldIds.length > 0) {
+          await api.removeCustomFieldsFromTestCases(client, projectId, testCaseIds, fieldIds);
+        }
+      }
+
+      return api.bulkSetTestCaseCustomFields(client, projectId, testCaseIds, args.payload);
+    },
+    delete_custom_field_value: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      return api.deleteCustomFieldValue(client, getRequiredId(args, "valueId"));
+    },
+    rename_custom_field_value: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      return api.renameCustomFieldValue(
+        client,
+        getRequiredId(args, "valueId"),
+        getRequiredString(args, "name"),
+      );
+    },
+    merge_custom_field_values: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      const projectId = await resolveProjectId(args, client);
+      const customFieldId = getRequiredNumber(args, "customFieldId");
+      const sourceValueId = getRequiredNumber(args, "sourceValueId");
+      const targetValueId = getRequiredNumber(args, "targetValueId");
+
+      const searchResult = await api.searchTestCases(client, projectId, `cf[${customFieldId}] = ${sourceValueId}`, {
+        size: 2000,
+      }) as { content?: Array<{ id: number }> };
+
+      const testCaseIds = Array.isArray(searchResult?.content)
+        ? searchResult.content.map((tc) => tc.id).filter((id): id is number => typeof id === "number")
+        : [];
+
+      if (testCaseIds.length > 0) {
+        await api.removeCustomFieldsFromTestCases(client, projectId, testCaseIds, [customFieldId]);
+        await api.bulkSetTestCaseCustomFields(client, projectId, testCaseIds, [
+          { customField: { id: customFieldId }, values: [{ id: targetValueId }] },
+        ]);
+      }
+
+      await api.deleteCustomFieldValue(client, sourceValueId);
+
+      return {
+        merged: true,
+        testCasesReassigned: testCaseIds.length,
+        sourceValueId,
+        targetValueId,
+        sourceDeleted: true,
+      };
+    },
+    search_test_cases_by_missing_field: async (rawArgs: unknown) => {
+      const args = asObject(rawArgs);
+      const projectId = await resolveProjectId(args, client);
+      const fieldName = getRequiredString(args, "fieldName");
+      const additionalRql = getOptionalString(args, "additionalRql");
+
+      let rql = `cf["${fieldName}"] is empty`;
+      if (additionalRql) {
+        rql = `${rql} and ${additionalRql}`;
+      }
+
+      return api.searchTestCases(client, projectId, rql, {
+        ...pickPagination(args),
+      });
     },
   };
 
