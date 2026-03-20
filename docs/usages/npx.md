@@ -13,22 +13,6 @@ ALLURE_TOKEN=your-api-token
 
 ## MCP Server Command
 
-Preferred for direct GitHub source execution:
-
-```json
-{
-  "command": "npx",
-  "args": ["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"],
-  "env": {
-    "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
-    "ALLURE_TOKEN": "your-api-token",
-    "ALLURE_PROJECT_ID": "37"
-  }
-}
-```
-
-Alternative (when the package is published to npm):
-
 ```json
 {
   "command": "npx",
