@@ -5,6 +5,16 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 10
+    ignore:
+      - dependency-name: "*"
+        update-types:
+          - "version-update:semver-minor"
+    groups:
+      npm-patch-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "patch"
     labels:
       - "dependencies"
     commit-message:

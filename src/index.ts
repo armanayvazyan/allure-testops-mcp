@@ -3,6 +3,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { CallToolRequestSchema, ListToolsRequestSchema } from "@modelcontextprotocol/sdk/types.js";
+import { readFileSync } from "node:fs";
 import { TokenManager } from "./auth.js";
 import { AllureApiClient } from "./client.js";
 import { buildToolRegistry, requiredEnv } from "./server-bootstrap.js";
@@ -28,6 +29,20 @@ function parseOptionalProjectId(value: string | undefined): number | undefined {
   return parsed;
 }
 
+function getServerVersion(): string {
+  try {
+    const packageJsonPath = new URL("../package.json", import.meta.url);
+    const packageJsonRaw = readFileSync(packageJsonPath, "utf8");
+    const packageJson = JSON.parse(packageJsonRaw) as { version?: unknown };
+    if (typeof packageJson.version === "string" && packageJson.version.length > 0) {
+      return packageJson.version;
+    }
+  } catch {
+    // Keep server startup resilient if package metadata is unavailable.
+  }
+  return "0.0.0";
+}
+
 async function main(): Promise<void> {
   const baseUrl = requiredEnv("ALLURE_TESTOPS_URL");
   const apiToken = requiredEnv("ALLURE_TOKEN");
@@ -36,9 +51,10 @@ async function main(): Promise<void> {
   const tokenManager = new TokenManager({ baseUrl, apiToken });
   const client = new AllureApiClient({ baseUrl, tokenManager, defaultProjectId });
   const { tools, handlers } = buildToolRegistry(client);
+  const serverVersion = getServerVersion();
 
   const server = new Server(
-    { name: "allure-testops-mcp", version: "1.0.0" },
+    { name: "allure-testops-mcp", version: serverVersion },
     { capabilities: { tools: {} } },
   );
 

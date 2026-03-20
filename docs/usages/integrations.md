@@ -21,7 +21,7 @@ Use this `mcpServers` entry in Cursor MCP settings:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -41,7 +41,7 @@ Use the same `mcpServers` structure in Claude Code MCP config:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -61,7 +61,7 @@ Add this to `claude_desktop_config.json`:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://your-allure-instance.com",
         "ALLURE_TOKEN": "your-api-token",
@@ -78,3 +78,4 @@ If you prefer other runtimes, replace only `command` and `args`:
 
 - Docker: see [docker.md](./docker.md)
 - Local build (`node dist/index.js`): see [running-locally.md](./running-locally.md)
+- npm registry package (when published): use `allure-testops-mcp@1.0.0`

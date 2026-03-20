@@ -138,10 +138,11 @@ Use one of these server commands:
   - `args`: `["/absolute/path/to/allure-testops-mcp/dist/index.js"]`
 - `npx` (GitHub spec):
   - `command`: `npx`
-  - `args`: `["-y", "github:armanayvazyan/allure-testops-mcp"]`
+  - `args`: `["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"]`
 - `npx` (npm package, when published):
   - `command`: `npx`
-  - `args`: `["-y", "allure-testops-mcp"]`
+  - `args`: `["-y", "allure-testops-mcp@1.0.0"]`
+- GitHub version pinning uses `#` with a tag/commit (for example `#v1.0.0`).
 Common config block:
 
 ```json
@@ -149,7 +150,7 @@ Common config block:
   "mcpServers": {
     "allure-testops": {
       "command": "npx",
-      "args": ["-y", "github:armanayvazyan/allure-testops-mcp"],
+      "args": ["-y", "github:armanayvazyan/allure-testops-mcp#v1.0.0"],
       "env": {
         "ALLURE_TESTOPS_URL": "https://allure-testops.instance.com",
         "ALLURE_TOKEN": "your-api-token",
