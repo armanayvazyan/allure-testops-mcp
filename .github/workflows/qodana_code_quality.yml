@@ -22,7 +22,7 @@ jobs:
       - name: 'Qodana Scan'
         uses: JetBrains/qodana-action@v2025.3
         with:
-          pr-mode: true
+          pr-mode: false
         env:
-          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_1027338065 }}
-          QODANA_ENDPOINT: 'https://qodana.cloud'
+          QODANA_TOKEN: ${{ secrets.QODANA_TOKEN_315184563 }}
+          QODANA_ENDPOINT: 'https://web.cloud.sssa-stgn.aws.intellij.net'
