@@ -3,21 +3,8 @@
 ####################################################################################################################
 
 version: "1.0"
-linter: jetbrains/qodana-js:2025.3
-bootstrap: npm ci
+linter: qodana-jvm-community
 profile:
   name: qodana.recommended
 include:
   - name: CheckDependencyLicenses
-  - name: VulnerableLibraries
-  - name: HardcodedPasswords
-  - name: JSUnresolvedReference
-  - name: JSUnusedLocalSymbols
-  - name: JSUnusedGlobalSymbols
-hardcodedPasswords:
-  reportDefaultSuspiciousVariableNames: true
-exclude:
-  - name: All
-    paths:
-      - dist
-      - node_modules
